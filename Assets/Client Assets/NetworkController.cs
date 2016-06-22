@@ -5,26 +5,27 @@ using SocketIO;
 
 public class NetworkController : MonoBehaviour {
 
-  // Use this for initialization
+	// Use this for initialization
   static SocketIOComponent socket;
   public GameObject playerPrefab;
+  public GameObject myPlayer;
+  public Terrain myTerrain;
 
   Dictionary<string, GameObject> players;
   
   void Awake () {
     socket = GetComponent<SocketIOComponent>();
   }
-  void Start () {
-    // socket.On("abcd", BuildTerrain);
+	void Start () {
+    socket.On("logged", BuildTerrain);
     socket.On("open", OnConnected);
     socket.On("spawn", OnSpawned);
     socket.On("onEndSpawn", OnEndSpawn);
-    socket.On("move", OnMove);
-    socket.On("load", OnLoad); 
-    socket.On("playerMove", OnPlayerMove); 
-
+    socket.On("playerMove", OnMove);
+    socket.On("requestPosition", OnRequestPosition);
+    socket.On("updatePosition", OnUpdatePosition);
     players = new Dictionary<string, GameObject> ();
-  }
+	}
 
   void OnConnected(SocketIOEvent e) {
     Debug.Log("Connected to server.");
@@ -36,40 +37,47 @@ public class NetworkController : MonoBehaviour {
     var player = Instantiate(playerPrefab);
     players.Add(e.data["id"].ToString(), player);
     Debug.Log("count: " + players.Count);
-    Debig.Log('id' + e.data["id"])
   }
 
-  void OnLoad(SocketIOEvent e) {
-    Debug.Log("Load data for new player" + e.data); 
-
-  }
-
-  void OnPlayerMove(SocketIOEvent e) {
-    Debug.Log("Handle other user's movement" + e.data); 
-    var player = players[e.data["id"].ToString()];
-    var navigate = player.GetComponent<NavigatePosition>();
-    var pos = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
-    Debug.Log("Player moved ");
-    navigate.NavigateTo(pos);
+  void BuildTerrain(SocketIOEvent e) {
+    Debug.Log("Building Terrain...");
+    // var ter = myTerrain.GetComponent<CreateTerrain>();
+    // Debug.Log("Build..." + e.data["data"]);
+    // ter.BuildingTerrain(e.data["data"]);
   }
 
   void OnEndSpawn(SocketIOEvent e) {
-    Debug.Log("Client despawned... " + e.data);
+    Debug.Log("Client disconnected... " + e.data);
     var id = e.data["id"].ToString();
     var player = players[id];
     Destroy(player);
     players.Remove(id);
   }
 
-  float GetJSONFloat (JSONObject data, string key) {
-    return float.Parse(data[key].ToString().Replace("\"", ""));
-  }
-
   void OnMove(SocketIOEvent e) {
     var player = players[e.data["id"].ToString()];
     var navigate = player.GetComponent<NavigatePosition>();
     var pos = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
-    Debug.Log("Client moved ");
     navigate.NavigateTo(pos);
+  }
+
+  void OnRequestPosition(SocketIOEvent e) {
+    Debug.Log("Server is requesting position");
+    socket.Emit("updatePosition", new JSONObject(VectorToJSON(myPlayer.transform.position)));
+  }
+
+  void OnUpdatePosition(SocketIOEvent e) {
+    Debug.Log("UpdatedPosition");
+    var player = players[e.data["id"].ToString()];
+    var pos = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
+    player.transform.position = pos;
+  }
+
+  float GetJSONFloat (JSONObject data, string key) {
+    return float.Parse(data[key].ToString().Replace("\"", ""));
+  }
+
+  public static string VectorToJSON (Vector3 position) {
+    return string.Format(@"{{""x"":""{0}"", ""y"":""{1}"", ""z"":""{2}""}}", position.x, position.y, position.z);
   }
 }

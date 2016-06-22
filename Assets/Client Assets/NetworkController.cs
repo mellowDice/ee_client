@@ -5,7 +5,7 @@ using SocketIO;
 
 public class NetworkController : MonoBehaviour {
 
-	// Use this for initialization
+  // Use this for initialization
   static SocketIOComponent socket;
   public GameObject playerPrefab;
 
@@ -14,15 +14,17 @@ public class NetworkController : MonoBehaviour {
   void Awake () {
     socket = GetComponent<SocketIOComponent>();
   }
-	void Start () {
+  void Start () {
     // socket.On("abcd", BuildTerrain);
     socket.On("open", OnConnected);
     socket.On("spawn", OnSpawned);
-    socket.On("clientDisconnect", OnDisconnect);
+    socket.On("onEndSpawn", OnEndSpawn);
     socket.On("move", OnMove);
+    socket.On("load", OnLoad); 
+    socket.On("playerMove", OnPlayerMove); 
 
     players = new Dictionary<string, GameObject> ();
-	}
+  }
 
   void OnConnected(SocketIOEvent e) {
     Debug.Log("Connected to server.");
@@ -33,19 +35,26 @@ public class NetworkController : MonoBehaviour {
     Debug.Log("New Player Spawned" + e.data);
     var player = Instantiate(playerPrefab);
     players.Add(e.data["id"].ToString(), player);
-
     Debug.Log("count: " + players.Count);
+    Debig.Log('id' + e.data["id"])
   }
 
-  void BuildTerrain(SocketIOEvent e) {
-    Debug.Log("Building Terrain...");
-    // BuildingTerrain
+  void OnLoad(SocketIOEvent e) {
+    Debug.Log("Load data for new player" + e.data); 
 
-    // Debug.Log(e);
   }
 
-  void OnDisconnect(SocketIOEvent e) {
-    Debug.Log("Client disconnected... " + e.data);
+  void OnPlayerMove(SocketIOEvent e) {
+    Debug.Log("Handle other user's movement" + e.data); 
+    var player = players[e.data["id"].ToString()];
+    var navigate = player.GetComponent<NavigatePosition>();
+    var pos = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
+    Debug.Log("Player moved ");
+    navigate.NavigateTo(pos);
+  }
+
+  void OnEndSpawn(SocketIOEvent e) {
+    Debug.Log("Client despawned... " + e.data);
     var id = e.data["id"].ToString();
     var player = players[id];
     Destroy(player);
@@ -60,6 +69,7 @@ public class NetworkController : MonoBehaviour {
     var player = players[e.data["id"].ToString()];
     var navigate = player.GetComponent<NavigatePosition>();
     var pos = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
+    Debug.Log("Client moved ");
     navigate.NavigateTo(pos);
   }
 }

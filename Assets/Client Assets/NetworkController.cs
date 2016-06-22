@@ -37,6 +37,7 @@ public class NetworkController : MonoBehaviour {
     var player = Instantiate(playerPrefab);
     players.Add(e.data["id"].ToString(), player);
     Debug.Log("count: " + players.Count);
+    Debug.Log('id' + e.data["id"])
   }
 
   void BuildTerrain(SocketIOEvent e) {

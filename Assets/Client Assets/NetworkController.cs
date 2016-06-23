@@ -63,9 +63,6 @@ public class NetworkController : MonoBehaviour {
   }
 
   void OnRequestPosition(SocketIOEvent e) {
-    Debug.Log("Server is requesting position" + socket.sid);
-    var pos = new JSONObject(VectorToJSON(myPlayer.transform.position)); 
-    Debug.Log("position" + pos); 
     socket.Emit("playerPosition", new JSONObject(VectorToJSON(myPlayer.transform.position)));
   }
 

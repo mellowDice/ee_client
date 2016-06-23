@@ -37,7 +37,7 @@ public class NetworkController : MonoBehaviour {
     var player = Instantiate(playerPrefab);
     players.Add(e.data["id"].ToString(), player);
     Debug.Log("count: " + players.Count);
-    Debug.Log('id' + e.data["id"])
+    Debug.Log("id" + e.data["id"]); 
   }
 
   void BuildTerrain(SocketIOEvent e) {
@@ -63,12 +63,13 @@ public class NetworkController : MonoBehaviour {
   }
 
   void OnRequestPosition(SocketIOEvent e) {
-    Debug.Log("Server is requesting position");
-    socket.Emit("updatePosition", new JSONObject(VectorToJSON(myPlayer.transform.position)));
+    Debug.Log("Server is requesting position" + socket.sid);
+    var pos = new JSONObject(VectorToJSON(myPlayer.transform.position)); 
+    Debug.Log("position" + pos); 
+    socket.Emit("playerPosition", new JSONObject(VectorToJSON(myPlayer.transform.position)));
   }
 
   void OnUpdatePosition(SocketIOEvent e) {
-    Debug.Log("UpdatedPosition");
     var player = players[e.data["id"].ToString()];
     var pos = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
     player.transform.position = pos;

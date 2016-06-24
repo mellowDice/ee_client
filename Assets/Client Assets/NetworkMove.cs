@@ -7,7 +7,6 @@ public class NetworkMove : MonoBehaviour {
   public SocketIOComponent socket;
 
   public void OnMove (Vector3 position) {
-    Debug.Log("sending: " + NetworkController.VectorToJSON(position));
     socket.Emit("move", new JSONObject(NetworkController.VectorToJSON(position)));
   }
 }

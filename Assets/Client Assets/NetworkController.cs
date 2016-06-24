@@ -9,7 +9,6 @@ public class NetworkController : MonoBehaviour {
   static SocketIOComponent socket;
   public GameObject playerPrefab;
   public GameObject myPlayer;
-  public Terrain myTerrain;
 
   Dictionary<string, GameObject> players;
   
@@ -17,8 +16,8 @@ public class NetworkController : MonoBehaviour {
     socket = GetComponent<SocketIOComponent>();
   }
 	void Start () {
-    socket.On("logged", BuildTerrain);
     socket.On("open", OnConnected);
+    socket.On("load", BuildTerrain);
     socket.On("spawn", OnSpawned);
     socket.On("onEndSpawn", OnEndSpawn);
     socket.On("playerMove", OnMove);
@@ -29,26 +28,21 @@ public class NetworkController : MonoBehaviour {
 
   void OnConnected(SocketIOEvent e) {
     Debug.Log("Connected to server.");
-    // socket.Emit("loggedIn");
   }
 
   void OnSpawned(SocketIOEvent e) {
-    Debug.Log("New Player Spawned" + e.data);
     var player = Instantiate(playerPrefab);
     players.Add(e.data["id"].ToString(), player);
-    Debug.Log("count: " + players.Count);
-    Debug.Log("id" + e.data["id"]); 
   }
 
   void BuildTerrain(SocketIOEvent e) {
     Debug.Log("Building Terrain...");
-    // var ter = myTerrain.GetComponent<CreateTerrain>();
-    // Debug.Log("Build..." + e.data["data"]);
-    // ter.BuildingTerrain(e.data["data"]);
+    var ter = GetComponent<CreateTerrainMesh>();
+    ter.BuildMesh(e.data["terrain"]);
   }
 
   void OnEndSpawn(SocketIOEvent e) {
-    Debug.Log("Client disconnected... " + e.data);
+    // Debug.Log("Client disconnected... " + e.data);
     var id = e.data["id"].ToString();
     var player = players[id];
     Destroy(player);

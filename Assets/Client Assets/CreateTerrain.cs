@@ -4,20 +4,19 @@ using System.Collections.Generic;
 
 public class CreateTerrain : MonoBehaviour {
   public Terrain Terrain;
-  private TerrainData tData;
+  // private TerrainData tData;
 
   void Awake() {
-    tData = Terrain.terrainData;
+    // tData = Terrain.terrainData;
   }
 
   public void BuildingTerrain (JSONObject Map2D) {
     var length = Map2D.list.Count;
-    Debug.Log(length);
 
     var terrainData = new TerrainData();
     terrainData.heightmapResolution = 100; //tData.heightmapResolution;
     terrainData.alphamapResolution = 100; //tData.alphamapResolution;
-    Debug.Log("Building time!");
+    Debug.Log("Building map!");
     var heightmap = GetHeightmap(Map2D, length);
     terrainData.SetHeights(0, 0, heightmap);
     terrainData.size = new Vector3(length, 10, length);

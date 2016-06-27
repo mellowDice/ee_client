@@ -13,8 +13,15 @@ sysinfo.txt
 # =========== #
 # Asset Store #
 # =========== #
-/Assets/
-!/Client Assets/*
+/Assets/*
+
+!/Assets/Client Assets/
+
+!/Assets/Standard Assets/
+/Assets/Standard Assets/*
+
+!/Assets/Standard Assets/SocketIO/
+!/Assets/Standard Assets/SocketIO.meta
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #

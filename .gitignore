@@ -1,7 +1,43 @@
-*
-#Ignore Demo
-Demo.app
-/Assets/Standard Assets/
-/Library/
-/Temp/
-/Demo.app
+# =============== #
+# Unity generated #
+# =============== #
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/**/*
+/[Ll]ibrary/
+/*.pdb
+
+sysinfo.txt
+*.stackdump
+
+# =========== #
+# Asset Store #
+# =========== #
+/Assets/
+!/Client Assets/*
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+[Ee]xported[Oo]bj/
+.vs/
+/*.userprefs
+/*.csproj
+/*.pidb
+/*.suo
+/*.sln*
+/*.user
+/*.unityproj
+/*.booproj
+ 
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store*
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+[Tt]humbs.db
+[Dd]esktop.ini

@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour {
     var radius = GetComponent<SphereCollider>().radius;
     camera.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);
 	  Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-    Debug.Log(radius);
+    // Debug.Log(radius);
     body.AddForce(ray.direction * speed);
 	}
 }

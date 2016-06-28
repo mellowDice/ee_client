@@ -3,13 +3,13 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
   private Rigidbody body;
-  public Camera camera;
+  public Camera cam;
   public bool mainPlayer = false;
   public float speed = 5f;
   private static NetworkMove netMove;
 
 	// Use this for initialization
-	void Start () {
+	public virtual void Start () {
     body = GetComponent<Rigidbody>();
     if(mainPlayer) {
       netMove = GetComponent<NetworkMove>();
@@ -19,14 +19,20 @@ public class PlayerMovement : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
     if(mainPlayer) {
-      var radius = GetComponent<SphereCollider>().radius;
-      camera.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);
-  	  Ray ray = camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-      // Debug.Log(radius);
-      netMove.Look(ray.direction);
-      MoveInDirection(ray.direction);
+      setCameraPosition();
+  	  var direction = getDirection();
+      netMove.Look(direction);
+      MoveInDirection(direction);
     }
 	}
+  public virtual Vector3 getDirection() {
+    var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    return ray.direction;
+  }
+  public virtual void setCameraPosition() {
+      var radius = GetComponent<SphereCollider>().radius;
+      cam.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
+  }
   public void MoveInDirection(Vector3 direction) {
     body.AddForce(direction * speed);
   }

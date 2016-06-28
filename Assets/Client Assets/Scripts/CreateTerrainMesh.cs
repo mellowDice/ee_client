@@ -6,6 +6,7 @@ public class CreateTerrainMesh : MonoBehaviour {
 
   public Material mats;
   public GameObject player;
+  public float heightMultiple = 50;
   
   public void BuildMesh (JSONObject Map2D) {
     var length = Map2D.list.Count;
@@ -20,7 +21,7 @@ public class CreateTerrainMesh : MonoBehaviour {
       for(int j = 0; j < length; j++)
       {
         //Add each new vertex in the plane
-        verts.Add(new Vector3(i, hMap[i,j] * 100, j));
+        verts.Add(new Vector3(i, hMap[i,j] * heightMultiple, j));
         //Skip if a new square on the plane hasn't been formed
         if (i == 0 || j == 0) continue;
         //Adds the index of the three vertices in order to make up each of the two tris

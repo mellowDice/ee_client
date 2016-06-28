@@ -4,21 +4,22 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour {
   private Rigidbody body;
   public Camera cam;
-  public bool mainPlayer = false;
   public float speed = 5f;
+  PlayerAttributes playerAttributes;
   private static NetworkMove netMove;
 
 	// Use this for initialization
 	public virtual void Start () {
     body = GetComponent<Rigidbody>();
-    if(mainPlayer) {
+    playerAttributes = GetComponent<PlayerAttributes>();
+    if(playerAttributes.mainPlayer) {
       netMove = GetComponent<NetworkMove>();
     }
 	}
 	
 	// Update is called once per frame
 	void Update () {
-    if(mainPlayer) {
+    if(playerAttributes.mainPlayer) {
       setCameraPosition();
   	  var direction = getDirection();
       netMove.Look(direction);

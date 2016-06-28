@@ -10,8 +10,8 @@ public class EnableGravity : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	 if (Input.anyKeyDown) {
-    GetComponent<Rigidbody>().useGravity = true;
-   }
+	  if(transform.position.y < -10) {
+	  	Destroy(transform.gameObject);
+	  }
 	}
 }

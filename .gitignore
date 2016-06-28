@@ -23,11 +23,6 @@ sysinfo.txt
 !/Assets/Standard Assets/SocketIO/
 !/Assets/Standard Assets/SocketIO.meta
 
-!/Assets/Standard Assets/GoogleVR/
-!/Assets/Standard Assets/GoogleVR.meta
-
-/Assets/Standard Assets/GoogleVR/DemoScenes/*
-
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #

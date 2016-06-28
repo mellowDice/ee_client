@@ -1,33 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PlayerMovementVR : MonoBehaviour {
-  private Rigidbody body;
+public class PlayerMovementVR : PlayerMovement {
   public GameObject gvrmain;
-  public bool mainPlayer = false;
-  public float speed = 5f;
-  private static NetworkMove netMove;
+  private SphereCollider sphereCollider;
 
   // Use this for initialization
-  void Start () {
-    body = GetComponent<Rigidbody>();
-    if(mainPlayer) {
-      netMove = GetComponent<NetworkMove>();
-    }
+  public override void Start () {
+    cam = new Camera(); // new camera to avoid error
+    sphereCollider = GetComponent<SphereCollider>();
+    base.Start();
   }
-  
-  // Update is called once per frame
-  void Update () {
-    if(mainPlayer) {
-      var radius = GetComponent<SphereCollider>().radius;
-      gvrmain.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);
-      Ray ray = gvrmain.GetComponentInChildren<Camera>().ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-      // Debug.Log(radius);
-      netMove.Look(ray.direction);
-      MoveInDirection(ray.direction);
-    }
+
+  override public Vector3 getDirection() {
+    var ray = gvrmain.GetComponentInChildren<Camera>().ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    return ray.direction;
   }
-  public void MoveInDirection(Vector3 direction) {
-    body.AddForce(direction * speed);
+
+  override public void setCameraPosition() {
+    var radius = sphereCollider.radius;
+    gvrmain.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
   }
 }

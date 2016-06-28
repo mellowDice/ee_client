@@ -26,6 +26,8 @@ sysinfo.txt
 !/Assets/Standard Assets/GoogleVR/
 !/Assets/Standard Assets/GoogleVR.meta
 
+/Assets/Standard Assets/GoogleVR/DemoScenes/*
+
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #

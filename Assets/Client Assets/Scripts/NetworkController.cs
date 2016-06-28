@@ -21,7 +21,7 @@ public class NetworkController : MonoBehaviour {
     socket.On("spawn", OnSpawned);
     socket.On("onEndSpawn", OnEndSpawn);
     socket.On("playerMove", OnMove);
-    // socket.On("otherPlayerLook", OnOtherPlayerLook);
+    socket.On("otherPlayerLook", OnOtherPlayerLook);
     socket.On("requestPosition", OnRequestPosition);
     socket.On("updatePosition", OnUpdatePosition);
     players = new Dictionary<string, GameObject> ();
@@ -57,12 +57,12 @@ public class NetworkController : MonoBehaviour {
     navigate.NavigateTo(pos);
   }
 
-  // void OnOtherPlayerLook(SocketIOEvent e) {
-  //   var player = players[e.data["id"].ToString()];
-  //   var navigate = player.GetComponent<NavigatePosition>();
-  //   var pos = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
-  //   navigate.NavigateTo(pos);
-  // }
+  void OnOtherPlayerLook(SocketIOEvent e) {
+    var player = players[e.data["id"].ToString()];
+    var navigate = player.GetComponent<PlayerMovement>();
+    var direction = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
+    navigate.MoveInDirection(direction);
+  }
 
   void OnRequestPosition(SocketIOEvent e) {
     socket.Emit("playerPosition", new JSONObject(VectorToJSON(myPlayer.transform.position)));

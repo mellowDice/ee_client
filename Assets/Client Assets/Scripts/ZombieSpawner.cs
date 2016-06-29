@@ -2,7 +2,7 @@
 using System.Collections;
 // using System.Collections.Generic;
 
-public class PlayerSpawner : MonoBehaviour {
+public class ZombieSpawner : MonoBehaviour {
 
   public GameObject prefab;
   private float timer;

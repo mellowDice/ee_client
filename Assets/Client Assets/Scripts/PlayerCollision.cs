@@ -11,6 +11,7 @@ public class PlayerCollision : MonoBehaviour {
   private float charge = 0;
   private float maxCharge = 100;
   private bool boost = false;
+  public bool vr = false;
 
   void Start() {
     retFill.type = Image.Type.Filled;
@@ -28,9 +29,12 @@ public class PlayerCollision : MonoBehaviour {
     if (charge > 0) {
       charge--;
     }
-    if (charge < 1) {
+    if (charge < 1 && !vr) {
       boost = false;
       GetComponent<PlayerMovement>().speedMultiplier = 1f;
+    } else if (charge < 1 && vr) {
+      boost = false;
+      GetComponent<PlayerMovementVR>().speedMultiplier = 1f;
     }
     retFill.fillAmount = (charge)/maxCharge;
   }
@@ -39,14 +43,17 @@ public class PlayerCollision : MonoBehaviour {
   /////////////////////
 	void OnTriggerEnter(Collider other) {
     particles.GetComponent<ParticleSystem>().Play();
-    zombieSpawner.GetComponent<PlayerSpawner>().ZombieCollide(other.transform.parent.gameObject);
+    zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
   }
 
   void fillReticle() {
     if (charge < maxCharge && boost == false) {
       charge += 2;
-    } else {
+    } else if (!vr) {
       GetComponent<PlayerMovement>().speedMultiplier = 3f;
+      boost = true;
+    } else if (vr) {
+      GetComponent<PlayerMovementVR>().speedMultiplier = 3f;
       boost = true;
     }
   }

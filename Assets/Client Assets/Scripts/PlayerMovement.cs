@@ -21,7 +21,7 @@ public class PlayerMovement : MonoBehaviour {
 	// Update is called once per frame
 	void FixedUpdate () {
     if(playerAttributes.mainPlayer) {
-      setCameraPosition();
+      // setCameraPosition();
   	  var direction = getDirection();
       netMove.Look(direction);
       MoveInDirection(direction);

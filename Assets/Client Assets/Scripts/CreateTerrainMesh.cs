@@ -7,7 +7,7 @@ public class CreateTerrainMesh : MonoBehaviour {
   public Material mats;
   public GameObject player;
   public float heightMultiple = 50;
-  
+
   public void BuildMesh (JSONObject Map2D) {
     var length = Map2D.list.Count;
     var hMap = GetHeightmap(Map2D, length);

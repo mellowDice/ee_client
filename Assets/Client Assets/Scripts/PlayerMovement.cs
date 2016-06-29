@@ -6,6 +6,9 @@ public class PlayerMovement : MonoBehaviour {
   public Camera cam;
   public float speed = 5f;
   public float speedMultiplier = 1f;
+  public bool computerControlled = false;
+  Vector3 computerControlledDirection = new Vector3(1,0,0);
+
   PlayerAttributes playerAttributes;
   private static NetworkMove netMove;
 
@@ -16,14 +19,22 @@ public class PlayerMovement : MonoBehaviour {
     if(playerAttributes.mainPlayer) {
       netMove = GetComponent<NetworkMove>();
     }
+    if(computerControlled) {
+      InvokeRepeating("UpdateComputerControlledDirection", 2.5f, 5f);
+    }
 	}
-	
+	void UpdateComputerControlledDirection() {
+    computerControlledDirection = Quaternion.AngleAxis(90.0f, Vector3.up) * computerControlledDirection;
+  }
 	// Update is called once per frame
 	void FixedUpdate () {
-    if(playerAttributes.mainPlayer) {
+    if(computerControlled) {
+      netMove.Look(computerControlledDirection);
+      MoveInDirection(computerControlledDirection);
+
+    } else if(playerAttributes.mainPlayer) {
       // setCameraPosition();
   	  var direction = getDirection();
-      netMove.Look(direction);
       MoveInDirection(direction);
     }
 	}

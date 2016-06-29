@@ -9,6 +9,7 @@ public class NetworkController : MonoBehaviour {
   static SocketIOComponent socket;
   public GameObject playerPrefab;
   public GameObject myPlayer;
+  public bool disableLandscape = false;
 
   Dictionary<string, GameObject> players;
   
@@ -37,6 +38,7 @@ public class NetworkController : MonoBehaviour {
   }
 
   void BuildTerrain(SocketIOEvent e) {
+    if(disableLandscape) return;
     Debug.Log("Building Terrain...");
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);

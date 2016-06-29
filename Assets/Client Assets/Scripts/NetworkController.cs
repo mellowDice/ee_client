@@ -34,6 +34,7 @@ public class NetworkController : MonoBehaviour {
 
   void OnSpawned(SocketIOEvent e) {
     var player = Instantiate(playerPrefab);
+    player.GetComponent<Transform>().position = new Vector3(125f, 50f, 125f);
     players.Add(e.data["id"].ToString(), player);
   }
 
@@ -64,8 +65,8 @@ public class NetworkController : MonoBehaviour {
   void OnOtherPlayerLook(SocketIOEvent e) {
     var player = players[e.data["id"].ToString()];
     var navigate = player.GetComponent<PlayerMovement>();
-    var direction = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
-    navigate.MoveInDirection(direction);
+    var direction = new Vector3(GetJSONFloat(e.data, "look_x"), GetJSONFloat(e.data, "look_y"), GetJSONFloat(e.data, "look_z"));
+    navigate.UpdateDirectionFromNetwork(direction);
   }
 
   void OnRequestPosition(SocketIOEvent e) {

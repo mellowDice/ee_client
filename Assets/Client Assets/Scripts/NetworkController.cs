@@ -23,6 +23,7 @@ public class NetworkController : MonoBehaviour {
     socket.On("onEndSpawn", OnEndSpawn);
     socket.On("playerMove", OnMove);
     socket.On("otherPlayerLook", OnOtherPlayerLook);
+    socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
     socket.On("requestPosition", OnRequestPosition);
     socket.On("updatePosition", OnUpdatePosition);
     players = new Dictionary<string, GameObject> ();
@@ -67,6 +68,15 @@ public class NetworkController : MonoBehaviour {
     var navigate = player.GetComponent<PlayerMovement>();
     var direction = new Vector3(GetJSONFloat(e.data, "look_x"), GetJSONFloat(e.data, "look_y"), GetJSONFloat(e.data, "look_z"));
     navigate.UpdateDirectionFromNetwork(direction);
+  }
+  void OnOtherPlayerStateReceived(SocketIOEvent e) {
+    Debug.Log("received player state");
+    var player = players[e.data["id"].ToString()];
+    var navigate = player.GetComponent<PlayerMovement>();
+    var position = new Vector3(GetJSONFloat(e.data, "position_x"), GetJSONFloat(e.data, "position_y"), GetJSONFloat(e.data, "position_z"));
+    var velocity = new Vector3(GetJSONFloat(e.data, "velocity_x"), GetJSONFloat(e.data, "velocity_y"), GetJSONFloat(e.data, "velocity_z"));
+    var angularVelocity = new Vector3(GetJSONFloat(e.data, "angular_velocity_x"), GetJSONFloat(e.data, "angular_velocity_y"), GetJSONFloat(e.data, "angular_velocity_z"));
+    navigate.PlayerStateReconcileReceive(position, velocity, angularVelocity);
   }
 
   void OnRequestPosition(SocketIOEvent e) {

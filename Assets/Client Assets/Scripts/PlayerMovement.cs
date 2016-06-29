@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour {
     }
     if(playerAttributes.mainPlayer) {
       InvokeRepeating("mainPlayerUpdateDirection", 0f, 0.1f);
+      InvokeRepeating("mainPlayerSendState", 0f, 0.1f);
     }
 	}
 	void UpdateComputerControlledDirection() {
@@ -34,6 +35,12 @@ public class PlayerMovement : MonoBehaviour {
 	void FixedUpdate () {
     MoveInDirection(direction);  
 	}
+  void mainPlayerSendState() {
+    var position = GetComponent<Transform>().position;
+    var velocity = body.velocity;
+    var angularVelocity = body.angularVelocity;
+    netMove.PlayerStateReconcileSend(position, velocity, angularVelocity);
+  }
   void mainPlayerUpdateDirection() {
     if(computerControlled) {
       direction = computerControlledDirection;
@@ -42,14 +49,28 @@ public class PlayerMovement : MonoBehaviour {
       // setCameraPosition();
       direction = getDirection();     
     }
-    var position = GetComponent<Transform>().position;
-    var velocity = body.velocity;
-    var angularVelocity = body.angularVelocity;
     netMove.Look(direction);
-    netMove.PlayerStateReconcileSend(position, velocity, angularVelocity);
   }
-  void PlayerStateReconcileReceive(Vector3 position, Vector3 velocity, Vector3 angularVelocity) {
-
+  public void PlayerStateReconcileReceive(Vector3 position, Vector3 velocity, Vector3 angularVelocity) {
+    var resetState = false;
+    if(Vector3.Distance(body.velocity, velocity) > 1) {
+      Debug.Log("VELOCITY MISMATCH:" + Vector3.Distance(body.velocity, velocity));
+      resetState = true;
+    }
+    if(Vector3.Distance(body.angularVelocity, angularVelocity) > 1) {
+      Debug.Log("ANGULAR VELOCITY MISMATCH:" + Vector3.Distance(body.angularVelocity, angularVelocity));
+      resetState = true;
+    }
+    var bodyPosition = GetComponent<Transform>().position;
+    if(Vector3.Distance(bodyPosition, position) > 1) {
+      Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
+      resetState = true;
+    } 
+    if(resetState) {      
+      GetComponent<Transform>().position = position;
+      body.velocity = velocity;
+      body.angularVelocity = angularVelocity;
+    }
   }
   public void UpdateDirectionFromNetwork(Vector3 networkDir) {
     direction = networkDir;

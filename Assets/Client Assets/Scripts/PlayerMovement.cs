@@ -5,6 +5,7 @@ public class PlayerMovement : MonoBehaviour {
   private Rigidbody body;
   public Camera cam;
   public float speed = 5f;
+  public float speedMultiplier = 1f;
   PlayerAttributes playerAttributes;
   private static NetworkMove netMove;
 
@@ -18,7 +19,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
     if(playerAttributes.mainPlayer) {
       setCameraPosition();
   	  var direction = getDirection();
@@ -32,9 +33,9 @@ public class PlayerMovement : MonoBehaviour {
   }
   public virtual void setCameraPosition() {
       var radius = GetComponent<SphereCollider>().radius;
-      cam.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
+      cam.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius + 0.5f,0);    
   }
   public void MoveInDirection(Vector3 direction) {
-    body.AddForce(direction * speed);
+    body.AddForce(direction * speed * speedMultiplier);
   }
 }

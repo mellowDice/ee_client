@@ -41,7 +41,7 @@ public class NetworkController : MonoBehaviour {
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);
     myPlayer.GetComponent<Rigidbody>().useGravity = true;
-    myPlayer.GetComponent<PlayerMovement>().speed = 5;
+    // myPlayer.GetComponent<PlayerMovement>().speed = 5;
   }
 
   void OnEndSpawn(SocketIOEvent e) {

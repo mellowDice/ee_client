@@ -12,13 +12,14 @@ public class NetworkController : MonoBehaviour {
   public bool disableLandscape = false;
 
   Dictionary<string, GameObject> players;
-  
+
   void Awake () {
     socket = GetComponent<EESocketIOComponent>();
   }
 	void Start () {
     socket.On("open", OnConnected);
     socket.On("load", BuildTerrain);
+    socket.On("createObstacle", CreateTerrainObstacle);
     socket.On("spawn", OnSpawned);
     socket.On("onEndSpawn", OnEndSpawn);
     socket.On("playerMove", OnMove);
@@ -46,6 +47,16 @@ public class NetworkController : MonoBehaviour {
     ter.BuildMesh(e.data["terrain"]);
     myPlayer.GetComponent<Rigidbody>().useGravity = true;
     // myPlayer.GetComponent<PlayerMovement>().speed = 5;
+  }
+
+  void CreateTerrainObstacle(SocketIOEvent e) {
+    var position = new Vector3(GetJSONFloat(e.data, "x"),
+                               GetJSONFloat(e.data, "y"),
+                               GetJSONFloat(e.data, "z")
+                               );
+    var id = e.data["id"].ToString();
+    var obstaclePosition = obstacles.GetComponent<ObstacleController>();
+    obstaclePosition.CreateObstacle(position, id);
   }
 
   void OnEndSpawn(SocketIOEvent e) {

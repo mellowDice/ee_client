@@ -33,7 +33,7 @@ public class PlayerMovement : MonoBehaviour {
   }
 	// Update is called once per frame
 	void FixedUpdate () {
-    MoveInDirection(direction);  
+    MoveInDirection(direction);
 	}
   void mainPlayerSendState() {
     var position = GetComponent<Transform>().position;
@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour {
     }
     else {
       // setCameraPosition();
-      direction = getDirection();     
+      direction = getDirection();
     }
     netMove.Look(direction);
   }
@@ -65,8 +65,8 @@ public class PlayerMovement : MonoBehaviour {
     if(Vector3.Distance(bodyPosition, position) > 0.1) {
       Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
       resetState = true;
-    } 
-    if(resetState) {      
+    }
+    if(resetState) {
       GetComponent<Transform>().position = position;
       body.velocity = velocity;
       body.angularVelocity = angularVelocity;
@@ -81,7 +81,7 @@ public class PlayerMovement : MonoBehaviour {
   }
   public virtual void setCameraPosition() {
       var radius = GetComponent<SphereCollider>().radius;
-      cam.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius + 0.5f,0);    
+      cam.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius + 0.5f,0);
   }
   public void MoveInDirection(Vector3 direction) {
     body.AddForce(direction * speed * speedMultiplier);

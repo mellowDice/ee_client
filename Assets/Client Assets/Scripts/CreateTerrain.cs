@@ -20,7 +20,7 @@ public class CreateTerrain : MonoBehaviour {
     var heightmap = GetHeightmap(Map2D, length);
     terrainData.SetHeights(0, 0, heightmap);
     terrainData.size = new Vector3(length, 10, length);
-    
+
     Terrain.activeTerrain.terrainData = terrainData;
     Terrain.Flush();
     Debug.Log("Done building!");
@@ -30,7 +30,7 @@ public class CreateTerrain : MonoBehaviour {
     var heightmap = new float[length, length];
 
     for (var i = 0; i < length; i++) {
-      for (var j = 0; j < length; j++) { 
+      for (var j = 0; j < length; j++) {
         heightmap[i, j] = Mathf.Abs(arr[i][j].n) * .5f;
         // heightmap[i, j] = Random.Range(0f,1f);
       }

@@ -6,22 +6,26 @@ using System.Collections.Generic;
 public class PlayerNetworkController : MonoBehaviour {
 
   public SocketIOComponent socket;
-  public GameObject myPlayer;
   Dictionary<string, GameObject> players;
   public GameObject playerPrefab;
+  public NetworkController networkController;
 
 
   ////////////////////////////
   // Unity Built-in Methods //
   ////////////////////////////
 
-	// Use this for initialization
   void Start () {
     socket.On("spawn", OnOtherPlayerSpawn);
     socket.On("onEndSpawn", OnOtherPlayerDespawn);
     socket.On("otherPlayerLook", OnOtherPlayerLook);
     socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
     players = new Dictionary<string, GameObject> ();
+
+    networkController.OnReady(delegate() {
+      GameObject.Find("Player").GetComponent<Rigidbody>().useGravity = true;
+    });
+
   }
 
 
@@ -71,9 +75,11 @@ public class PlayerNetworkController : MonoBehaviour {
 
   // ON OTHER PLAYER SPAWN: Creates the player when server sends message of new player
   void OnOtherPlayerSpawn(SocketIOEvent e) {
-    var player = Instantiate(playerPrefab);
-    player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
-    players.Add(e.data["id"].ToString(), player);
+    networkController.OnReady(delegate() {
+      var player = Instantiate(playerPrefab);
+      player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
+      players.Add(e.data["id"].ToString(), player);
+    });
   }
 
   // ON OTHER PLAYER DESPAWN: Deletes the player when server sends message of player exiting

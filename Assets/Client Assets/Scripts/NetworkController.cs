@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-// using System.Collections.Generic;
+using System.Collections.Generic;
 using SocketIO;
+
+// Define Callback Delegate;
+public delegate void Callback();
 
 public class NetworkController : MonoBehaviour {
 
@@ -9,8 +12,9 @@ public class NetworkController : MonoBehaviour {
   static SocketIOComponent socket;
   public GameObject myPlayer;
   public bool disableLandscape = false;
-  
-  
+  List<Callback> onReadyCallbacks = new List<Callback>();
+  bool loaded = false;
+
   void Awake () {
     socket = GetComponent<EESocketIOComponent>();
   }
@@ -19,6 +23,19 @@ public class NetworkController : MonoBehaviour {
     socket.On("load", BuildTerrain);
 	}
 
+  public void OnReady(Callback cb) {
+    Debug.Log("On Ready");
+    if(loaded) {
+      cb();
+    }
+    onReadyCallbacks.Add(cb);
+  }
+  public void Ready() {
+    loaded = true;
+    onReadyCallbacks.ForEach(delegate(Callback cb){
+      cb();
+    });
+  }
   void OnConnected(SocketIOEvent e) {
     Debug.Log("Connected to server.");
   }
@@ -28,7 +45,7 @@ public class NetworkController : MonoBehaviour {
     Debug.Log("Building Terrain...");
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);
-    myPlayer.GetComponent<Rigidbody>().useGravity = true;
+    Ready();
   }
 
   float GetJSONFloat (JSONObject data, string key) {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class PlayerNetworkController : MonoBehaviour {
 
-  public SocketIOComponent socket;
+  SocketIOComponent socket;
   Dictionary<string, GameObject> players;
   public GameObject playerPrefab;
   public NetworkController networkController;
@@ -15,6 +15,10 @@ public class PlayerNetworkController : MonoBehaviour {
   // Unity Built-in Methods //
   ////////////////////////////
 
+  void Awake() {
+    socket = GetComponent<EESocketIOComponent>();
+    networkController = GetComponent<NetworkController>();
+  }
   void Start () {
     socket.On("spawn", OnOtherPlayerSpawn);
     socket.On("onEndSpawn", OnOtherPlayerDespawn);

@@ -53,16 +53,16 @@ public class PlayerMovement : MonoBehaviour {
   }
   public void PlayerStateReconcileReceive(Vector3 position, Vector3 velocity, Vector3 angularVelocity) {
     var resetState = false;
-    if(Vector3.Distance(body.velocity, velocity) > 1) {
+    if(Vector3.Distance(body.velocity, velocity) > 0.1) {
       Debug.Log("VELOCITY MISMATCH:" + Vector3.Distance(body.velocity, velocity));
       resetState = true;
     }
-    if(Vector3.Distance(body.angularVelocity, angularVelocity) > 1) {
+    if(Vector3.Distance(body.angularVelocity, angularVelocity) > 0.1) {
       Debug.Log("ANGULAR VELOCITY MISMATCH:" + Vector3.Distance(body.angularVelocity, angularVelocity));
       resetState = true;
     }
     var bodyPosition = GetComponent<Transform>().position;
-    if(Vector3.Distance(bodyPosition, position) > 1) {
+    if(Vector3.Distance(bodyPosition, position) > 0.1) {
       Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
       resetState = true;
     } 

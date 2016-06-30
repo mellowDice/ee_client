@@ -35,7 +35,7 @@ public class NetworkController : MonoBehaviour {
 
   void OnSpawned(SocketIOEvent e) {
     var player = Instantiate(playerPrefab);
-    player.GetComponent<Transform>().position = new Vector3(125f, 50f, 125f);
+    player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
     players.Add(e.data["id"].ToString(), player);
   }
 

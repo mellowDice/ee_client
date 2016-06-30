@@ -9,6 +9,7 @@ public class NetworkController : MonoBehaviour {
   static SocketIOComponent socket;
   public GameObject playerPrefab;
   public GameObject myPlayer;
+  public bool disableLandscape = false;
 
   Dictionary<string, GameObject> players;
   
@@ -22,6 +23,7 @@ public class NetworkController : MonoBehaviour {
     socket.On("onEndSpawn", OnEndSpawn);
     socket.On("playerMove", OnMove);
     socket.On("otherPlayerLook", OnOtherPlayerLook);
+    socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
     socket.On("requestPosition", OnRequestPosition);
     socket.On("updatePosition", OnUpdatePosition);
     players = new Dictionary<string, GameObject> ();
@@ -33,10 +35,12 @@ public class NetworkController : MonoBehaviour {
 
   void OnSpawned(SocketIOEvent e) {
     var player = Instantiate(playerPrefab);
+    player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
     players.Add(e.data["id"].ToString(), player);
   }
 
   void BuildTerrain(SocketIOEvent e) {
+    if(disableLandscape) return;
     Debug.Log("Building Terrain...");
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);
@@ -62,8 +66,17 @@ public class NetworkController : MonoBehaviour {
   void OnOtherPlayerLook(SocketIOEvent e) {
     var player = players[e.data["id"].ToString()];
     var navigate = player.GetComponent<PlayerMovement>();
-    var direction = new Vector3(GetJSONFloat(e.data, "x"), GetJSONFloat(e.data, "y"), GetJSONFloat(e.data, "z"));
-    navigate.MoveInDirection(direction);
+    var direction = new Vector3(GetJSONFloat(e.data, "look_x"), GetJSONFloat(e.data, "look_y"), GetJSONFloat(e.data, "look_z"));
+    navigate.UpdateDirectionFromNetwork(direction);
+  }
+  void OnOtherPlayerStateReceived(SocketIOEvent e) {
+    Debug.Log("received player state");
+    var player = players[e.data["id"].ToString()];
+    var navigate = player.GetComponent<PlayerMovement>();
+    var position = new Vector3(GetJSONFloat(e.data, "position_x"), GetJSONFloat(e.data, "position_y"), GetJSONFloat(e.data, "position_z"));
+    var velocity = new Vector3(GetJSONFloat(e.data, "velocity_x"), GetJSONFloat(e.data, "velocity_y"), GetJSONFloat(e.data, "velocity_z"));
+    var angularVelocity = new Vector3(GetJSONFloat(e.data, "angular_velocity_x"), GetJSONFloat(e.data, "angular_velocity_y"), GetJSONFloat(e.data, "angular_velocity_z"));
+    navigate.PlayerStateReconcileReceive(position, velocity, angularVelocity);
   }
 
   void OnRequestPosition(SocketIOEvent e) {

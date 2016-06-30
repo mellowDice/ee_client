@@ -5,6 +5,7 @@ using System.Collections;
 public class PlayerCollision : MonoBehaviour {
   public GameObject particles;
   public Image retFill;
+  public Image retFill2;
   // public GameObject gvrmain;
   public Camera cam;
   public GameObject zombieSpawner;
@@ -16,6 +17,8 @@ public class PlayerCollision : MonoBehaviour {
   void Start() {
     retFill.type = Image.Type.Filled;
     retFill.fillClockwise = true;
+	retFill2.type = Image.Type.Filled;
+	retFill2.fillClockwise = true;
   }
 
 	void Update() {
@@ -37,6 +40,7 @@ public class PlayerCollision : MonoBehaviour {
       GetComponent<PlayerMovementVR>().speedMultiplier = 1f;
     }
     retFill.fillAmount = (charge)/maxCharge;
+	retFill2.fillAmount = (charge)/maxCharge;
   }
   /////////////////////
   //COLLISION CHECKER//

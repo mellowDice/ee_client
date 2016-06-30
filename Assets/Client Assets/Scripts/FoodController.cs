@@ -2,22 +2,21 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 
-public class ObstacleController : MonoBehaviour {
+public class FoodController : MonoBehaviour {
 
-  public GameObject obstaclePrefab;
+  public GameObject foodPrefab;
 
-  // Dictionary<string, string> obstacles = new Dictionary<string, string>();
+  // Dictionary<string, string> foods = new Dictionary<string, string>();
 
-  public void CreateObstacle (JSONObject obstacles)
+  public void CreateFood (JSONObject foods)
   {
-    var length = obstacles.list.Count;
-
+    var length = foods.list.Count;
     for (var i = 0; i < length; i++) {
-      var position = new Vector3(GetJSONFloat(obstacles[i], "x"),
-                                 GetJSONFloat(obstacles[i], "y") * 50f,
-                                 GetJSONFloat(obstacles[i], "z")
+      var position = new Vector3(GetJSONFloat(foods[i], "x"),
+                                 GetJSONFloat(foods[i], "y") * 50f,
+                                 GetJSONFloat(foods[i], "z")
                                  );
-      var obstacle = Instantiate(obstaclePrefab, position, Quaternion.identity) as GameObject;
+      var food = Instantiate(foodPrefab, position, Quaternion.identity) as GameObject;
     }
   }
   // void DestroyObject (Collider other)

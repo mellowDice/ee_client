@@ -19,7 +19,6 @@ public class NetworkController : MonoBehaviour {
 	void Start () {
     socket.On("open", OnConnected);
     socket.On("load", BuildTerrain);
-    socket.On("createObstacle", CreateTerrainObstacle);
     socket.On("spawn", OnSpawned);
     socket.On("onEndSpawn", OnEndSpawn);
     socket.On("playerMove", OnMove);
@@ -46,17 +45,11 @@ public class NetworkController : MonoBehaviour {
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);
     myPlayer.GetComponent<Rigidbody>().useGravity = true;
-    // myPlayer.GetComponent<PlayerMovement>().speed = 5;
-  }
-
-  void CreateTerrainObstacle(SocketIOEvent e) {
-    var position = new Vector3(GetJSONFloat(e.data, "x"),
-                               GetJSONFloat(e.data, "y"),
-                               GetJSONFloat(e.data, "z")
-                               );
-    var id = e.data["id"].ToString();
-    var obstaclePosition = obstacles.GetComponent<ObstacleController>();
-    obstaclePosition.CreateObstacle(position, id);
+    myPlayer.GetComponent<PlayerMovement>().speed = 5;
+    var obs = GetComponent<ObstacleController>();
+    obs.CreateObstacle(e.data["obstacles"]);
+    var foods = GetComponent<FoodController>();
+    foods.CreateFood(e.data["food"]);
   }
 
   void OnEndSpawn(SocketIOEvent e) {

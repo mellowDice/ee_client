@@ -12,7 +12,7 @@ public class PlayerMovementVR : PlayerMovement {
   // START: Camera used now is GRVMAIN Camera
   public override void Start () {
     base.Start();
-    cam = gvrmain.GetComponentInChildren<Camera>();
+    // cam = gvrmain.GetComponentInChildren<Camera>();
   }
 
 

@@ -46,13 +46,10 @@ public class NetworkController : MonoBehaviour {
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);
     Ready();
-  }
 
-  float GetJSONFloat (JSONObject data, string key) {
-    return float.Parse(data[key].ToString().Replace("\"", ""));
-  }
-
-  public static string VectorToJSON (Vector3 position) {
-    return string.Format(@"{{""x"":""{0}"", ""y"":""{1}"", ""z"":""{2}""}}", position.x, position.y, position.z);
+    var obs = GetComponent<ObstaclesController>();
+    obs.CreateObstacle(e.data["obstacles"]);
+    var foods = GetComponent<FoodController>();
+    foods.CreateFood(e.data["food"]);
   }
 }

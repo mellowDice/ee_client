@@ -2,7 +2,7 @@
 using System.Collections;
 
 public class NavigatePosition : MonoBehaviour {
-  
+
   private CharacterController agent;
   private Vector3 position;
   private float speed = 10.0f;

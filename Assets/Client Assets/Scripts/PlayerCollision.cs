@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections;
 
 public class PlayerCollision : MonoBehaviour {
@@ -9,20 +10,16 @@ public class PlayerCollision : MonoBehaviour {
   // public GameObject gvrmain;
   public Camera cam;
   public GameObject zombieSpawner;
+  public GameObject obstaclePrefab;
   private float charge = 0;
   private float maxCharge = 100;
   private bool boost = false;
-  public bool vr = false;
   PlayerMovement playerMovement;
 
   void Start() {
     retFill.type = Image.Type.Filled;
     retFill.fillClockwise = true;
-    if (vr) {
-	    retFill2.type = Image.Type.Filled;
-	    retFill2.fillClockwise = true;
-    }
-    playerMovement = vr ? GetComponent<PlayerMovementVR>() : GetComponent<PlayerMovement>();
+    playerMovement = GameAttributes.VR ? GetComponent<PlayerMovementVR>() : GetComponent<PlayerMovement>();
   }
 
 	void Update() {
@@ -61,16 +58,27 @@ public class PlayerCollision : MonoBehaviour {
     }
 
     retFill.fillAmount = (charge)/maxCharge;
-    if (vr) {
-	    retFill2.fillAmount = (charge)/maxCharge;
-    }
   }
   
   /////////////////////
   //COLLISION CHECKER//
   /////////////////////
 	void OnTriggerEnter(Collider other) {
-    particles.GetComponent<ParticleSystem>().Play();
-    zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+
+    if (other.gameObject.CompareTag("Zombie")) {
+      particles.GetComponent<ParticleSystem>().Play();
+      zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+    }
+
+    if (other.gameObject.CompareTag("Obstacle")) {
+      // decrease player mass fn needed
+      // other.gameObject.GetComponent<ObstacleController>().DestroyObstacle(other.id);
+    }
+
+    // if (other.gameObject.CompareTag("Food")) {
+    //   // increase player mass
+    //   foodPrefab.GetComponent<FoodController>().DestroyFood(other.id);
+    // }
+
   }
 }

@@ -2,18 +2,24 @@
 using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
-  public Camera cam;
 
-  private Rigidbody body;
+  // Cameras
+  public Camera nonVRCamera;
+  public GameObject GRVMain;
+  Camera directionCamera;
 
+  // Player Rigidbody
+  Rigidbody body;
+
+  // Movement variables
   public float speed = 5f;
   float speedMultiplier = 1f;
-  public bool computerControlled = false;
   Vector3 computerControlledDirection = new Vector3(1,0,0);
   Vector3 direction = new Vector3(1,0,0);
 
+  // Components
   PlayerAttributes playerAttributes;
-  private static PlayerNetworkController netMove;
+  PlayerNetworkController playerNetworkController;
 
 
   ////////////////////////////
@@ -24,15 +30,20 @@ public class PlayerMovement : MonoBehaviour {
 	public virtual void Start () {
     body = GetComponent<Rigidbody>();
     playerAttributes = GetComponent<PlayerAttributes>();
+
+    // Additional setup only for main player
     if(playerAttributes.mainPlayer) {
-      netMove = GetComponent<PlayerNetworkController>();
-    }
-    if(computerControlled) {
-      InvokeRepeating("UpdateComputerControlledDirection", 2.5f, 5f);
-    }
-    if(playerAttributes.mainPlayer) {
+      directionCamera = GameAttributes.VR ? GRVMain.GetComponentInChildren<Camera>() : nonVRCamera;
+      playerNetworkController = GameObject.Find("Network").GetComponent<PlayerNetworkController>();
+      
+      // Set up direction and state monitoring
       InvokeRepeating("UpdateAndSendPlayerDirection", 0f, 0.1f);
       InvokeRepeating("SendMainPlayerState", 0f, 0.1f);
+
+      // Set up for computer controlled main player
+      if(GameAttributes.computerControlledMainPlayer) {
+        InvokeRepeating("UpdateComputerControlledDirection", 2.5f, 5f);
+      }
     }
 	}
 
@@ -53,15 +64,16 @@ public class PlayerMovement : MonoBehaviour {
     speedMultiplier = 1;
   }
 
+
   /////////////////////////////////////
   // Methods Relating to Main Player //
   /////////////////////////////////////
 
   // Update player direction based on where camera is facing
   void UpdateAndSendPlayerDirection() {
-    var camDirection = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)).direction;
-    direction = computerControlled ? computerControlledDirection : camDirection;
-    netMove.Look(direction);
+    var camDirection = directionCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)).direction;
+    direction = GameAttributes.computerControlledMainPlayer ? computerControlledDirection : camDirection;
+    playerNetworkController.Look(direction);
   }
 
   // Send server current position/velocity of player
@@ -69,13 +81,13 @@ public class PlayerMovement : MonoBehaviour {
     var position = GetComponent<Transform>().position;
     var velocity = body.velocity;
     var angularVelocity = body.angularVelocity;
-    netMove.PlayerStateSend(position, velocity, angularVelocity);
+    playerNetworkController.PlayerStateSend(position, velocity, angularVelocity);
   }
 
   // Keeps camera situated above ball
   public virtual void setCameraPosition() {
       var radius = GetComponent<SphereCollider>().radius;
-      cam.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
+      directionCamera.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
   }
 
   // For debugging - has player move in circles instead following camera
@@ -108,13 +120,11 @@ public class PlayerMovement : MonoBehaviour {
     if(Vector3.Distance(bodyPosition, position) > 0.1) {
       Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
       resetState = true;
-    } 
-    if(resetState) {      
+    }
+    if(resetState) {
       GetComponent<Transform>().position = position;
       body.velocity = velocity;
       body.angularVelocity = angularVelocity;
     }
   }
-
-
 }

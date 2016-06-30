@@ -19,9 +19,9 @@ public class PlayerAttributes : MonoBehaviour {
 	void Start () {
     playerMass = pMass; // Allow size-derived properties to be set
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-	
+
 	}
 }

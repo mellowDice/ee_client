@@ -7,7 +7,7 @@ public class PlayerMovement : MonoBehaviour {
   private Rigidbody body;
 
   public float speed = 5f;
-  public float speedMultiplier = 1f;
+  float speedMultiplier = 1f;
   public bool computerControlled = false;
   Vector3 computerControlledDirection = new Vector3(1,0,0);
   Vector3 direction = new Vector3(1,0,0);
@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour {
   // Unity Built-in Methods //
   ////////////////////////////
 
-	// START: Initialization
+	// Initialization
 	public virtual void Start () {
     body = GetComponent<Rigidbody>();
     playerAttributes = GetComponent<PlayerAttributes>();
@@ -36,24 +36,35 @@ public class PlayerMovement : MonoBehaviour {
     }
 	}
 
-  // FIXED UPDATE: Before Every Physics Calculation, add force to player
+  // Before Every Physics Calculation, add force to player
   void FixedUpdate () {
     body.AddForce(direction * speed * speedMultiplier); 
   }
 
 
   /////////////////////////////////////
+  // Methods Relating to All Players //
+  /////////////////////////////////////
+
+  public void Boost() {
+    speedMultiplier = 3;
+  }
+  public void EndBoost() {
+    speedMultiplier = 1;
+  }
+
+  /////////////////////////////////////
   // Methods Relating to Main Player //
   /////////////////////////////////////
 
-  // UPDATE AND SEND PLAYER DIRECTION: Update player direction based on where camera is facing
+  // Update player direction based on where camera is facing
   void UpdateAndSendPlayerDirection() {
     var camDirection = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)).direction;
     direction = computerControlled ? computerControlledDirection : camDirection;
     netMove.Look(direction);
   }
 
-  // SEND MAIN PLAYER STATE: Send server current position/velocity of player
+  // Send server current position/velocity of player
   void SendMainPlayerState() {
     var position = GetComponent<Transform>().position;
     var velocity = body.velocity;
@@ -61,13 +72,13 @@ public class PlayerMovement : MonoBehaviour {
     netMove.PlayerStateSend(position, velocity, angularVelocity);
   }
 
-  // SET CAMERA POSITION: Keeps camera situated above ball
+  // Keeps camera situated above ball
   public virtual void setCameraPosition() {
       var radius = GetComponent<SphereCollider>().radius;
       cam.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
   }
 
-  // UPDATE COMPUTER CONTROLLED DIRECTION: For debugging - has player move in circles instead following camera
+  // For debugging - has player move in circles instead following camera
 	void UpdateComputerControlledDirection() {
     computerControlledDirection = Quaternion.AngleAxis(90.0f, Vector3.up) * computerControlledDirection;
   }
@@ -77,12 +88,12 @@ public class PlayerMovement : MonoBehaviour {
   // Methods Relating to Other Players //
   ///////////////////////////////////////
 
-  // RECEIVE PLAYER DIRECTION: Receive direction player is currently facing
+  // Receive from server direction player is currently facing
   public void ReceivePlayerDirection(Vector3 networkDir) {
     direction = networkDir;
   }
 
-  // RECEIVE PLAYER STATE: Receive updated position/velocity from server and compare
+  // Receive  from server updated position/velocity and compare
   public void ReceivePlayerState(Vector3 position, Vector3 velocity, Vector3 angularVelocity) {
     var resetState = false;
     var bodyPosition = GetComponent<Transform>().position;

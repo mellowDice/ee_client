@@ -8,7 +8,7 @@ public class PlayerNetworkController : MonoBehaviour {
   SocketIOComponent socket;
   Dictionary<string, GameObject> players;
   public GameObject playerPrefab;
-  public NetworkController networkController;
+  NetworkController networkController;
 
 
   ////////////////////////////

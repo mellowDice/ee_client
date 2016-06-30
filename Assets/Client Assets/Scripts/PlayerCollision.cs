@@ -28,17 +28,38 @@ public class PlayerCollision : MonoBehaviour {
 	void Update() {
     var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
     RaycastHit hit = new RaycastHit();
+
     Physics.Raycast(ray, out hit, 1000f);
+
+    // If pointing at target
     if (hit.collider != null && hit.collider.name == "TriggerSphere") {
-      fillReticle();
+      if(boost) {
+        charge--;
+        if(charge <= 0) {
+          boost = false;
+          playerMovement.EndBoost();
+        }
+      }
+      else {
+        charge++;
+        if(charge == maxCharge) {
+          boost = true;
+          playerMovement.Boost();
+        }
+      }
     }
-    if (charge > 0) {
-      charge--;
+
+    // If not pointing at target
+    else {
+      if(charge > 0) {
+        charge--;
+      }
+      else if (charge <= 0 && boost) {
+        boost = false;
+        playerMovement.EndBoost();
+      }
     }
-    if (charge <= 0) {
-      boost = false;
-      playerMovement.speedMultiplier = 1f;
-    }
+
     retFill.fillAmount = (charge)/maxCharge;
     if (vr) {
 	    retFill2.fillAmount = (charge)/maxCharge;
@@ -51,14 +72,5 @@ public class PlayerCollision : MonoBehaviour {
 	void OnTriggerEnter(Collider other) {
     particles.GetComponent<ParticleSystem>().Play();
     zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
-  }
-
-  void fillReticle() {
-    if (charge < maxCharge && boost == false) {
-      charge += 2;
-    } else {
-      boost = true;
-      playerMovement.speedMultiplier = 3f;
-    }
   }
 }

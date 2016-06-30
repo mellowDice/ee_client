@@ -20,7 +20,7 @@ public class ObstacleController : MonoBehaviour {
       var obstacle = Instantiate(obstaclePrefab, position, Quaternion.identity) as GameObject;
     }
   }
-  // void DestroyObject (Collider other)
+  // void DestroyFood (string id)
   // {
   //   // obstacle active state to false
   //   if (other.gameObject.CompareTag("Player"))

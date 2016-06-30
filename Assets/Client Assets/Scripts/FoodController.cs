@@ -19,7 +19,7 @@ public class FoodController : MonoBehaviour {
       var food = Instantiate(foodPrefab, position, Quaternion.identity) as GameObject;
     }
   }
-  // void DestroyObject (Collider other)
+  // void DestroyObject (string id)
   // {
   //   // obstacle active state to false
   //   if (other.gameObject.CompareTag("Player"))
@@ -31,7 +31,7 @@ public class FoodController : MonoBehaviour {
   //   var destroy = obstacles.GetComponent<NetworkDestroy>();
   //   destroy.OnDestroy(obstacleId, obstaclePosition);
   //   // remove from obstacles object - still need id
-  //   obstacles.Remove(id);
+  //   foods.Remove(id);
   // }
   float GetJSONFloat (JSONObject data, string key) {
     return float.Parse(data[key].ToString().Replace("\"", ""));

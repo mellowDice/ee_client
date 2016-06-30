@@ -1,24 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// TODO: Just drag grvmain -> camera into the scene inspector so the cam variable doesn't need to be overridden
 public class PlayerMovementVR : PlayerMovement {
   public GameObject gvrmain;
-  private SphereCollider sphereCollider;
 
-  // Use this for initialization
+  ////////////////////////////
+  // Unity Built-in Methods //
+  ////////////////////////////
+
+  // START: Camera used now is GRVMAIN Camera
   public override void Start () {
-    cam = new Camera(); // new camera to avoid error
-    sphereCollider = GetComponent<SphereCollider>();
     base.Start();
+    cam = gvrmain.GetComponentInChildren<Camera>();
   }
 
-  override public Vector3 getDirection() {
-    var ray = gvrmain.GetComponentInChildren<Camera>().ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
-    return ray.direction;
-  }
 
+  //////////////////////
+  // Override Methods //
+  //////////////////////
+
+  // SET CAMERA POSTION: Uses GVRMAIN in place of single camera
   override public void setCameraPosition() {
-    var radius = sphereCollider.radius;
+    var radius = GetComponent<SphereCollider>().radius;
     gvrmain.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
   }
 }

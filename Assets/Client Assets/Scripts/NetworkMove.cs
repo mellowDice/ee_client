@@ -6,9 +6,6 @@ public class NetworkMove : MonoBehaviour {
 
   public SocketIOComponent socket;
 
-  public void OnMove (Vector3 position) {
-    socket.Emit("move", new JSONObject(NetworkController.VectorToJSON(position)));
-  }
   public void Look (Vector3 direction) {
     var j = new JSONObject(JSONObject.Type.OBJECT);
 

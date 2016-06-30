@@ -51,8 +51,6 @@ public class CreateTerrainMesh : MonoBehaviour {
     plane.AddComponent<MeshCollider>();
     plane.GetComponent<MeshCollider>().sharedMesh = null;
     plane.GetComponent<MeshCollider>().sharedMesh = procMesh;
-    plane.AddComponent<ClickMove>();
-    plane.GetComponent<ClickMove>().player = player;
   }
 
   private float[,] GetHeightmap(JSONObject arr, int length) {//JSONObject arr, int length) {

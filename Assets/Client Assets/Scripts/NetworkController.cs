@@ -12,7 +12,7 @@ public class NetworkController : MonoBehaviour {
   public bool disableLandscape = false;
 
   Dictionary<string, GameObject> players;
-  
+
   void Awake () {
     socket = GetComponent<EESocketIOComponent>();
   }
@@ -45,7 +45,11 @@ public class NetworkController : MonoBehaviour {
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);
     myPlayer.GetComponent<Rigidbody>().useGravity = true;
-    // myPlayer.GetComponent<PlayerMovement>().speed = 5;
+    myPlayer.GetComponent<PlayerMovement>().speed = 5;
+    var obs = GetComponent<ObstaclesController>();
+    obs.CreateObstacle(e.data["obstacles"]);
+    var foods = GetComponent<FoodController>();
+    foods.CreateFood(e.data["food"]);
   }
 
   void OnEndSpawn(SocketIOEvent e) {

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using System;
 using System.Collections;
 
 public class PlayerCollision : MonoBehaviour {
@@ -9,6 +10,7 @@ public class PlayerCollision : MonoBehaviour {
   // public GameObject gvrmain;
   public Camera cam;
   public GameObject zombieSpawner;
+  public GameObject obstaclePrefab;
   private float charge = 0;
   private float maxCharge = 100;
   private bool boost = false;
@@ -50,8 +52,22 @@ public class PlayerCollision : MonoBehaviour {
   //COLLISION CHECKER//
   /////////////////////
 	void OnTriggerEnter(Collider other) {
-    particles.GetComponent<ParticleSystem>().Play();
-    zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+
+    // if (other.gameObject.CompareTag("Zombie")) {
+    //   particles.GetComponent<ParticleSystem>().Play();
+    //   zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+    // }
+
+    if (other.gameObject.CompareTag("Obstacle")) {
+      // decrease player mass fn needed
+      // other.gameObject.GetComponent<ObstacleController>().DestroyObstacle(other.id);
+    }
+
+    // if (other.gameObject.CompareTag("Food")) {
+    //   // increase player mass
+    //   foodPrefab.GetComponent<FoodController>().DestroyFood(other.id);
+    // }
+
   }
 
   void fillReticle() {

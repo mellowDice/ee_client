@@ -20,8 +20,8 @@ sysinfo.txt
 !/Assets/Standard Assets/
 /Assets/Standard Assets/*
 
-!/Assets/Standard Assets/SocketIO/
-!/Assets/Standard Assets/SocketIO.meta
+/Assets/Standard Assets/SocketIO/
+/Assets/Standard Assets/SocketIO.meta
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
@@ -36,7 +36,7 @@ sysinfo.txt
 **/*.user
 **/*.unityproj
 **/*.booproj
- 
+
 # ============ #
 # OS generated #
 # ============ #

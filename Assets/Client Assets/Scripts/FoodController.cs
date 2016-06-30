@@ -5,8 +5,7 @@ using System.Collections.Generic;
 public class FoodController : MonoBehaviour {
 
   public GameObject foodPrefab;
-
-  // Dictionary<string, string> foods = new Dictionary<string, string>();
+  Dictionary<string, GameObject> foodsDict = new Dictionary<string, GameObject>();
 
   public void CreateFood (JSONObject foods)
   {
@@ -17,22 +16,18 @@ public class FoodController : MonoBehaviour {
                                  GetJSONFloat(foods[i], "z")
                                  );
       var food = Instantiate(foodPrefab, position, Quaternion.identity) as GameObject;
+      foodsDict.Add(foods[i]["id"].ToString(), food);
     }
   }
-  // void DestroyObject (string id)
-  // {
-  //   // obstacle active state to false
-  //   if (other.gameObject.CompareTag("Player"))
-  //   {
-  //     obstaclePrefab.SetActive(false);
-  //   }
 
-  //   var obstacle = GetComponent;
-  //   var destroy = obstacles.GetComponent<NetworkDestroy>();
-  //   destroy.OnDestroy(obstacleId, obstaclePosition);
-  //   // remove from obstacles object - still need id
-  //   foods.Remove(id);
-  // }
+  void DestroyFood (string id)
+  {
+    var destroy = foodPrefab.GetComponent<NetworkDestroy>();
+    // destroy.OnDestroy(id);
+    foodsDict["id"].SetActive(false);
+    foodsDict.Remove(id);
+  }
+
   float GetJSONFloat (JSONObject data, string key) {
     return float.Parse(data[key].ToString().Replace("\"", ""));
   }

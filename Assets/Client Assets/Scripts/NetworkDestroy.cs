@@ -8,13 +8,11 @@ using SocketIO;
 public class NetworkDestroy : MonoBehaviour {
 
   static SocketIOComponent socket;
-  public GameObject food;
-  public GameObject obstacle; // send obstacle id
-  public GameObject player;
 
-  void OnDestroy () {
+  public void OnDestroy (string id) {
     // data to send - amount of food left
     //              - id of obstacle
+    Debug.Log(id);
   }
 
 }

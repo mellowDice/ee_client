@@ -46,7 +46,7 @@ public class NetworkController : MonoBehaviour {
     ter.BuildMesh(e.data["terrain"]);
     myPlayer.GetComponent<Rigidbody>().useGravity = true;
     myPlayer.GetComponent<PlayerMovement>().speed = 5;
-    var obs = GetComponent<ObstacleController>();
+    var obs = GetComponent<ObstaclesController>();
     obs.CreateObstacle(e.data["obstacles"]);
     var foods = GetComponent<FoodController>();
     foods.CreateFood(e.data["food"]);

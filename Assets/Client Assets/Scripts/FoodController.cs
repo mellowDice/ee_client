@@ -22,8 +22,6 @@ public class FoodController : MonoBehaviour {
 
   void DestroyFood (string id)
   {
-    var destroy = foodPrefab.GetComponent<NetworkDestroy>();
-    // destroy.OnDestroy(id);
     foodsDict["id"].SetActive(false);
     foodsDict.Remove(id);
   }

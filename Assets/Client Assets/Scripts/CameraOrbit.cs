@@ -3,9 +3,12 @@ using System.Collections;
 
 public class CameraOrbit : MonoBehaviour {
 
-	public GameObject ball;
+	GameObject mainPlayer;
 
+  void Awake () {
+    mainPlayer = GameAttributes.mainPlayer;
+  }
 	void Update () {
-	  transform.position = new Vector3(ball.transform.position.x, ball.transform.position.y + 1f, ball.transform.position.z);
+	  transform.position = new Vector3(mainPlayer.transform.position.x, mainPlayer.transform.position.y + 1f, mainPlayer.transform.position.z);
 	}
 }

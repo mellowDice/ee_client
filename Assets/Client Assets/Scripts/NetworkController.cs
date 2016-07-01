@@ -22,13 +22,13 @@ public class NetworkController : MonoBehaviour {
 	}
 
   public static void OnReady(Callback cb) {
-    Debug.Log("On Ready");
     if(loaded) {
       cb();
     }
     onReadyCallbacks.Add(cb);
   }
   public void Ready() {
+    Debug.Log("Ready");
     loaded = true;
     onReadyCallbacks.ForEach(delegate(Callback cb){
       cb();
@@ -43,6 +43,8 @@ public class NetworkController : MonoBehaviour {
     Debug.Log("Building Terrain...");
     var ter = GetComponent<CreateTerrainMesh>();
     ter.BuildMesh(e.data["terrain"]);
+    
+    Ready();
 
     var obs = GetComponent<ObstaclesController>();
     obs.CreateObstacle(e.data["obstacles"]);
@@ -50,6 +52,5 @@ public class NetworkController : MonoBehaviour {
     var foods = GetComponent<FoodController>();
     foods.CreateFood(e.data["food"]);
 
-    Ready();
   }
 }

@@ -4,11 +4,8 @@ using System;
 using System.Collections;
 
 public class PlayerCollision : MonoBehaviour {
-  public GameObject particles;
+  ParticleSystem particles;
   public Image retFill;
-  public Image retFill2;
-  // public GameObject gvrmain;
-  public Camera cam;
   public GameObject zombieSpawner;
   public GameObject obstaclePrefab;
   private float charge = 0;
@@ -16,14 +13,17 @@ public class PlayerCollision : MonoBehaviour {
   private bool boost = false;
   PlayerMovement playerMovement;
 
-  void Start() {
+  void Awake() {
     retFill.type = Image.Type.Filled;
     retFill.fillClockwise = true;
-    playerMovement = GameAttributes.VR ? GetComponent<PlayerMovementVR>() : GetComponent<PlayerMovement>();
+    playerMovement = GetComponent<PlayerMovement>();
   }
 
+  void Start() {
+    particles = GameAttributes.camera.GetComponentInChildren<ParticleSystem>();
+  }
 	void Update() {
-    var ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    var ray = GameAttributes.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
     RaycastHit hit = new RaycastHit();
 
     Physics.Raycast(ray, out hit, 1000f);
@@ -66,7 +66,7 @@ public class PlayerCollision : MonoBehaviour {
 	void OnTriggerEnter(Collider other) {
 
     if (other.gameObject.CompareTag("Zombie")) {
-      particles.GetComponent<ParticleSystem>().Play();
+      particles.Play();
       zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
     }
 

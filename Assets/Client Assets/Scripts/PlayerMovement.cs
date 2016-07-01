@@ -3,11 +3,6 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
 
-  // Cameras
-  public Camera nonVRCamera;
-  public GameObject GRVMain;
-  Camera directionCamera;
-
   // Player Rigidbody
   Rigidbody body;
 
@@ -33,7 +28,6 @@ public class PlayerMovement : MonoBehaviour {
 
     // Additional setup only for main player
     if(playerAttributes.mainPlayer) {
-      directionCamera = GameAttributes.VR ? GRVMain.GetComponentInChildren<Camera>() : nonVRCamera;
       playerNetworkController = GameObject.Find("Network").GetComponent<PlayerNetworkController>();
       
       // Set up direction and state monitoring
@@ -71,7 +65,7 @@ public class PlayerMovement : MonoBehaviour {
 
   // Update player direction based on where camera is facing
   void UpdateAndSendPlayerDirection() {
-    var camDirection = directionCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)).direction;
+    var camDirection = GameAttributes.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)).direction;
     direction = GameAttributes.computerControlledMainPlayer ? computerControlledDirection : camDirection;
     playerNetworkController.Look(direction);
   }
@@ -87,7 +81,7 @@ public class PlayerMovement : MonoBehaviour {
   // Keeps camera situated above ball
   public virtual void setCameraPosition() {
       var radius = GetComponent<SphereCollider>().radius;
-      directionCamera.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
+      GameAttributes.camera.GetComponent<Transform>().position = GetComponent<Transform>().position + new Vector3(0,radius,0);    
   }
 
   // For debugging - has player move in circles instead following camera

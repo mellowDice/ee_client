@@ -16,7 +16,7 @@ public class PlayerNetworkController : MonoBehaviour {
   ////////////////////////////
 
   void Awake() {
-    socket = GetComponent<EESocketIOComponent>();
+    socket = NetworkController.socket;
     networkController = GetComponent<NetworkController>();
   }
   void Start () {

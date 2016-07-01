@@ -9,7 +9,7 @@ public delegate void Callback();
 public class NetworkController : MonoBehaviour {
 
 	// Use this for initialization
-  static SocketIOComponent socket;
+  public static SocketIOComponent socket;
   public GameObject myPlayer;
   public bool disableLandscape = false;
   List<Callback> onReadyCallbacks = new List<Callback>();

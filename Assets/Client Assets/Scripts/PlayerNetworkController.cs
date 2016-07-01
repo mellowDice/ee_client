@@ -8,7 +8,6 @@ public class PlayerNetworkController : MonoBehaviour {
   SocketIOComponent socket;
   Dictionary<string, GameObject> players;
   public GameObject playerPrefab;
-  NetworkController networkController;
 
 
   ////////////////////////////
@@ -17,7 +16,6 @@ public class PlayerNetworkController : MonoBehaviour {
 
   void Awake() {
     socket = NetworkController.socket;
-    networkController = GetComponent<NetworkController>();
   }
   void Start () {
     socket.On("spawn", OnOtherPlayerSpawn);
@@ -26,8 +24,8 @@ public class PlayerNetworkController : MonoBehaviour {
     socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
     players = new Dictionary<string, GameObject> ();
 
-    networkController.OnReady(delegate() {
-      GameObject.Find("Player").GetComponent<Rigidbody>().useGravity = true;
+    NetworkController.OnReady(delegate() {
+      GameAttributes.mainPlayer.GetComponent<Rigidbody>().useGravity = true;
     });
 
   }
@@ -79,7 +77,7 @@ public class PlayerNetworkController : MonoBehaviour {
 
   // ON OTHER PLAYER SPAWN: Creates the player when server sends message of new player
   void OnOtherPlayerSpawn(SocketIOEvent e) {
-    networkController.OnReady(delegate() {
+    NetworkController.OnReady(delegate() {
       var player = Instantiate(playerPrefab);
       player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
       players.Add(e.data["id"].ToString(), player);

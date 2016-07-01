@@ -8,6 +8,8 @@ public class GameAttributes : MonoBehaviour {
   public static bool VR;
   public bool _computerControlledMainPlayer = false;
   public static bool computerControlledMainPlayer;
+  public bool _disableLandscape = false;
+  public static bool disableLandscape;
   public GameObject _mainPlayer;
   public static GameObject mainPlayer;
   public static Camera camera;
@@ -23,6 +25,7 @@ public class GameAttributes : MonoBehaviour {
     VR = _VR;
     computerControlledMainPlayer = _computerControlledMainPlayer;
     mainPlayer = _mainPlayer;
+    disableLandscape = _disableLandscape;
     camera = VR ? GVR.GetComponentInChildren<Camera>() : NonVRCamera;
   }
 

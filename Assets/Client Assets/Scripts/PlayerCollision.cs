@@ -6,20 +6,26 @@ using System.Collections;
 public class PlayerCollision : MonoBehaviour {
   ParticleSystem particles;
   public Image retFill;
+  public Image retFill2;
   public GameObject zombieSpawner;
   public GameObject obstaclePrefab;
   private float charge = 0;
-  private float maxCharge = 100;
+  private float maxCharge = 150;
   private bool boost = false;
   PlayerMovement playerMovement;
 
   void Awake() {
-    retFill.type = Image.Type.Filled;
-    retFill.fillClockwise = true;
     playerMovement = GetComponent<PlayerMovement>();
   }
 
   void Start() {
+    if (GameAttributes.VR) {
+      retFill.type = Image.Type.Filled;
+      retFill.fillClockwise = true;
+    } else {
+      retFill2.type = Image.Type.Filled;
+      retFill2.fillClockwise = true;
+    }
     particles = GameAttributes.camera.GetComponentInChildren<ParticleSystem>();
   }
 	void Update() {
@@ -28,36 +34,54 @@ public class PlayerCollision : MonoBehaviour {
 
     Physics.Raycast(ray, out hit, 1000f);
 
-    // If pointing at target
-    if (hit.collider != null && hit.collider.name == "TriggerSphere") {
+    // If pointing at target who is not larger than self.
+    if (hit.collider != null
+        && hit.collider.name == "TriggerSphere"
+        //Prevents player from boosting into larger objects
+        && GetComponent<PlayerAttributes>().playerMass >= hit.transform.GetComponent<PlayerAttributes>().playerMass
+        && GetComponent<PlayerAttributes>().playerMass >= 7.5f
+        ) {
       if(boost) {
-        charge--;
+        charge -= 2;
         if(charge <= 0) {
-          boost = false;
+          Invoke("ToggleBoostTimer", 2);
           playerMovement.EndBoost();
         }
       }
       else {
-        charge++;
-        if(charge == maxCharge) {
+        charge += 2;
+        if(charge >= maxCharge) {
+          //Will require server call to change playerMass
+          GetComponent<PlayerAttributes>().playerMass -= 2.5f;
           boost = true;
           playerMovement.Boost();
         }
       }
     }
-
     // If not pointing at target
     else {
       if(charge > 0) {
-        charge--;
+        if(boost) {
+          charge -= 2;
+        } else {
+          charge--;
+        }
       }
       else if (charge <= 0 && boost) {
-        boost = false;
+        Invoke("ToggleBoostTimer", 2);
         playerMovement.EndBoost();
       }
     }
+    Debug.Log(GetComponent<PlayerAttributes>().playerMass);
+    if (GameAttributes.VR) {
+      retFill.fillAmount = (charge)/maxCharge;
+    } else {
+      retFill2.fillAmount = (charge)/maxCharge;
+    }
+  }
 
-    retFill.fillAmount = (charge)/maxCharge;
+  void ToggleBoostTimer() {
+    boost = false;
   }
   
   /////////////////////

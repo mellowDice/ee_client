@@ -8,13 +8,14 @@ public class PlayerMovement : MonoBehaviour {
 
   // Movement variables
   public float speed = 5f;
-  float speedMultiplier = 1f;
+  float speedMultiplier = 0f;
   Vector3 computerControlledDirection = new Vector3(1,0,0);
   Vector3 direction = new Vector3(1,0,0);
 
   // Components
   PlayerAttributes playerAttributes;
   PlayerNetworkController playerNetworkController;
+  ParticleSystem particles;
 
 
   ////////////////////////////
@@ -23,6 +24,9 @@ public class PlayerMovement : MonoBehaviour {
 
 	// Initialization
 	public virtual void Start () {
+    particles = GameAttributes.camera.GetComponentInChildren<ParticleSystem>();
+    particles.loop = true;
+    particles.Play();
     body = GetComponent<Rigidbody>();
     playerAttributes = GetComponent<PlayerAttributes>();
 
@@ -39,6 +43,15 @@ public class PlayerMovement : MonoBehaviour {
         InvokeRepeating("UpdateComputerControlledDirection", 2.5f, 5f);
       }
     }
+    NetworkController.OnReady(delegate() {
+      speedMultiplier = 1f;
+      RaycastHit hit = new RaycastHit();
+      if(Physics.Raycast(transform.position, Vector3.down, out hit)) {
+        transform.position -= new Vector3(0 , hit.distance - 10 , 0);
+      }
+      particles.loop = false;
+      particles.Stop();
+    });
 	}
 
   // Before Every Physics Calculation, add force to player

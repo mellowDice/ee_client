@@ -5,7 +5,7 @@ public class CameraOrbit : MonoBehaviour {
 
 	GameObject mainPlayer;
 
-  void Awake () {
+  void Start () {
     mainPlayer = GameAttributes.mainPlayer;
   }
 	void Update () {

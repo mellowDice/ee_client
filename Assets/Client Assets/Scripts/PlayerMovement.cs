@@ -52,6 +52,10 @@ public class PlayerMovement : MonoBehaviour {
       particles.loop = false;
       particles.Stop();
     });
+
+    NetworkController.OnReady(delegate() {
+      GetComponent<Rigidbody>().useGravity = true;
+    });
 	}
 
   // Before Every Physics Calculation, add force to player
@@ -85,10 +89,12 @@ public class PlayerMovement : MonoBehaviour {
 
   // Send server current position/velocity of player
   void SendMainPlayerState() {
-    var position = GetComponent<Transform>().position;
+    Debug.Log("send player state");
+    var position = transform.position;
     var velocity = body.velocity;
     var angularVelocity = body.angularVelocity;
-    playerNetworkController.PlayerStateSend(position, velocity, angularVelocity);
+    var rotation = transform.rotation;
+    playerNetworkController.PlayerStateSend(position, velocity, angularVelocity, rotation);
   }
 
   // Keeps camera situated above ball
@@ -113,25 +119,31 @@ public class PlayerMovement : MonoBehaviour {
   }
 
   // Receive  from server updated position/velocity and compare
-  public void ReceivePlayerState(Vector3 position, Vector3 velocity, Vector3 angularVelocity) {
+  public void ReceivePlayerState(Vector3 position, Vector3 velocity, Vector3 angularVelocity, Quaternion rotation) {
     var resetState = false;
-    var bodyPosition = GetComponent<Transform>().position;
-    if(Vector3.Distance(body.velocity, velocity) > 0.1) {
-      Debug.Log("VELOCITY MISMATCH:" + Vector3.Distance(body.velocity, velocity));
-      resetState = true;
-    }
-    if(Vector3.Distance(body.angularVelocity, angularVelocity) > 0.1) {
-      Debug.Log("ANGULAR VELOCITY MISMATCH:" + Vector3.Distance(body.angularVelocity, angularVelocity));
-      resetState = true;
-    }
-    if(Vector3.Distance(bodyPosition, position) > 0.1) {
-      Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
+    var bodyPosition = transform.position;
+    var bodyRotation = transform.rotation;
+    // if(Vector3.Distance(body.velocity, velocity) > 0.1) {
+    //   Debug.Log("VELOCITY MISMATCH:" + Vector3.Distance(body.velocity, velocity));
+    //   resetState = true;
+    // }
+    // if(Vector3.Distance(body.angularVelocity, angularVelocity) > 0.1) {
+    //   Debug.Log("ANGULAR VELOCITY MISMATCH:" + Vector3.Distance(body.angularVelocity, angularVelocity));
+    //   resetState = true;
+    // }
+    // if(Vector3.Distance(bodyPosition, position) > 0.1) {
+    //   Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
+    //   resetState = true;
+    // }
+    if(Quaternion.Dot(bodyRotation, rotation) < 0.98) {
+      Debug.Log("ROTATION MISMATCH:" + Quaternion.Dot(bodyRotation, rotation));
       resetState = true;
     }
     if(resetState) {
-      GetComponent<Transform>().position = position;
+      transform.position = position;
       body.velocity = velocity;
       body.angularVelocity = angularVelocity;
+      transform.rotation = rotation;
     }
   }
 }

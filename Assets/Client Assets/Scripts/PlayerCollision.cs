@@ -72,7 +72,6 @@ public class PlayerCollision : MonoBehaviour {
         playerMovement.EndBoost();
       }
     }
-    Debug.Log(GetComponent<PlayerAttributes>().playerMass);
     if (GameAttributes.VR) {
       retFill.fillAmount = (charge)/maxCharge;
     } else {
@@ -88,10 +87,26 @@ public class PlayerCollision : MonoBehaviour {
   //COLLISION CHECKER//
   /////////////////////
 	void OnTriggerEnter(Collider other) {
+    // if (other.gameObject.CompareTag("Zombie")) {
+    //   particles.Play();
+    //   zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+    // }
 
-    if (other.gameObject.CompareTag("Zombie")) {
-      particles.Play();
-      zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+    if (other.gameObject.CompareTag("Zombie") || other.gameObject.CompareTag("Player")) {
+      var otherPlayer = other.transform.parent.gameObject;
+      var otherPlayerAttributes = otherPlayer.GetComponent<PlayerAttributes>();
+      var mainPlayerAttributes = GetComponent<PlayerAttributes>();
+
+      if (otherPlayerAttributes.playerMass > mainPlayerAttributes.playerMass) {
+        PlayerNetworkController.Kill("main player", GetComponent<Transform>().position.x, GetComponent<Transform>().position.z);
+      }
+      else if (otherPlayerAttributes.playerMass < mainPlayerAttributes.playerMass){
+        PlayerNetworkController.Kill(otherPlayerAttributes.id, other.GetComponent<Transform>().position.x, other.GetComponent<Transform>().position.z);
+        if (other.gameObject.CompareTag("Zombie")) {
+          particles.Play();
+          zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+        }
+      }
     }
 
     if (other.gameObject.CompareTag("Obstacle")) {

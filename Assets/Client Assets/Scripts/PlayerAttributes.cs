@@ -4,14 +4,16 @@ using System.Collections;
 public class PlayerAttributes : MonoBehaviour {
   public bool mainPlayer = false;
   private float pMass = 10;
+  public string id;
 
   // PROPERTIES ///
   public float playerMass {
     get { return pMass; }
     set {
       pMass = value;
-      var scale = Mathf.Pow(pMass, 1/3);
-      GetComponent<Transform>().localScale = new Vector3(scale, scale, scale);
+      var scale = Mathf.Pow(pMass, 1f/3f);
+      transform.localScale = new Vector3(scale*0.95f, scale, scale);
+      GetComponent<Rigidbody>().mass = pMass/10;
     }
   }
 

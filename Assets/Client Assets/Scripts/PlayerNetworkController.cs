@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class PlayerNetworkController : MonoBehaviour {
 
-  SocketIOComponent socket;
+  static SocketIOComponent socket;
   Dictionary<string, GameObject> players;
   public GameObject playerPrefab;
 
@@ -14,26 +14,37 @@ public class PlayerNetworkController : MonoBehaviour {
   // Unity Built-in Methods //
   ////////////////////////////
 
-  void Awake() {
-    socket = NetworkController.socket;
-  }
   void Start () {
+    socket = NetworkController.socket;
     socket.On("spawn", OnOtherPlayerSpawn);
     socket.On("onEndSpawn", OnOtherPlayerDespawn);
+    socket.On("otherPlayerKilled", OnOtherPlayerDespawn);
     socket.On("otherPlayerLook", OnOtherPlayerLook);
     socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
     players = new Dictionary<string, GameObject> ();
+  }
 
-    NetworkController.OnReady(delegate() {
-      GameAttributes.mainPlayer.GetComponent<Rigidbody>().useGravity = true;
-    });
 
+  ///////////////////////////////////
+  // Methods Related to Any Player //
+  ///////////////////////////////////
+
+  public static void Kill(string playerID, float xPosition, float zPosition) {
+    var j = new JSONObject();
+    j.AddField("id", playerID);
+    j.AddField("x_position", xPosition);
+    j.AddField("z_position", zPosition);
+    socket.Emit("kill_player", j);
   }
 
 
   ////////////////////////////////////
   // Methods Related to Main Player //
   ////////////////////////////////////
+
+  public static void Die(SocketIOEvent e) {
+
+  }
 
   // LOOK: Sends data about direction player is facing to server
   public void Look (Vector3 direction) {
@@ -48,7 +59,7 @@ public class PlayerNetworkController : MonoBehaviour {
   }
 
   // PLAYER STATE DATA SEND: Sends data about current player state to server
-  public void PlayerStateSend (Vector3 position, Vector3 velocity, Vector3 angularVelocity) {
+  public void PlayerStateSend (Vector3 position, Vector3 velocity, Vector3 angularVelocity, Quaternion rotation) {
     var j = new JSONObject(JSONObject.Type.OBJECT);
 
     // User position
@@ -66,6 +77,12 @@ public class PlayerNetworkController : MonoBehaviour {
     j.AddField("angular_velocity_y", angularVelocity.y);
     j.AddField("angular_velocity_z", angularVelocity.z);
 
+    // User angular velocity
+    j.AddField("rotation_x", rotation.x);
+    j.AddField("rotation_y", rotation.y);
+    j.AddField("rotation_z", rotation.z);
+    j.AddField("rotation_w", rotation.w);
+
     // Add angular position and velocity
     socket.Emit("player_state_reconcile", j);
   }
@@ -81,6 +98,7 @@ public class PlayerNetworkController : MonoBehaviour {
       var player = Instantiate(playerPrefab);
       player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
       players.Add(e.data["id"].ToString(), player);
+      player.GetComponent<PlayerAttributes>().id = e.data["id"].ToString();
     });
   }
 
@@ -102,13 +120,13 @@ public class PlayerNetworkController : MonoBehaviour {
 
   // ON OTHER PLAYER STATE RECEIVED: Acts on message from server about current state of other players
   void OnOtherPlayerStateReceived(SocketIOEvent e) {
-    Debug.Log("received player state");
     var player = players[e.data["id"].ToString()];
     var navigate = player.GetComponent<PlayerMovement>();
     var position = new Vector3(GetJSONFloat(e.data, "position_x"), GetJSONFloat(e.data, "position_y"), GetJSONFloat(e.data, "position_z"));
     var velocity = new Vector3(GetJSONFloat(e.data, "velocity_x"), GetJSONFloat(e.data, "velocity_y"), GetJSONFloat(e.data, "velocity_z"));
     var angularVelocity = new Vector3(GetJSONFloat(e.data, "angular_velocity_x"), GetJSONFloat(e.data, "angular_velocity_y"), GetJSONFloat(e.data, "angular_velocity_z"));
-    navigate.ReceivePlayerState(position, velocity, angularVelocity);
+    var rotation = new Quaternion(GetJSONFloat(e.data, "rotation_x"), GetJSONFloat(e.data, "rotation_y"), GetJSONFloat(e.data, "rotation_z"), GetJSONFloat(e.data, "rotation_w"));
+    navigate.ReceivePlayerState(position, velocity, angularVelocity, rotation);
   }
 
 
@@ -117,6 +135,6 @@ public class PlayerNetworkController : MonoBehaviour {
   ////////////////////
 
   float GetJSONFloat (JSONObject data, string key) {
-    return float.Parse(data[key].ToString().Substring(1, -1));
+    return float.Parse(data[key].ToString());
   }
 }

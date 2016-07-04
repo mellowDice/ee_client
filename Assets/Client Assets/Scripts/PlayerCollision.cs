@@ -42,14 +42,14 @@ public class PlayerCollision : MonoBehaviour {
         && GetComponent<PlayerAttributes>().playerMass >= 7.5f
         ) {
       if(boost) {
-        charge -= 2;
+        charge -= 80 * Time.deltaTime;
         if(charge <= 0) {
           Invoke("ToggleBoostTimer", 2);
           playerMovement.EndBoost();
         }
       }
       else {
-        charge += 2;
+        charge += 80 * Time.deltaTime;
         if(charge >= maxCharge) {
           //Will require server call to change playerMass
           GetComponent<PlayerAttributes>().playerMass -= 2.5f;
@@ -62,9 +62,9 @@ public class PlayerCollision : MonoBehaviour {
     else {
       if(charge > 0) {
         if(boost) {
-          charge -= 2;
+          charge -= 80 * Time.deltaTime;
         } else {
-          charge--;
+          charge -= 40 * Time.deltaTime;
         }
       }
       else if (charge <= 0 && boost) {

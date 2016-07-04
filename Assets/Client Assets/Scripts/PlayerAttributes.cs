@@ -14,7 +14,7 @@ public class PlayerAttributes : MonoBehaviour {
       pMass = value;
       var scale = Mathf.Pow(pMass, 1f/3f);
       transform.localScale = new Vector3(scale*0.95f, scale, scale);
-      GetComponent<Rigidbody>().mass = pMass/80;
+      GetComponent<Rigidbody>().mass = Mathf.Pow(pMass/10, 1/2);
       TEMP = pMass;
     }
   }

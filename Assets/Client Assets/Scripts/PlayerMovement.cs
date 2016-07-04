@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
@@ -16,6 +17,13 @@ public class PlayerMovement : MonoBehaviour {
   PlayerAttributes playerAttributes;
   PlayerNetworkController playerNetworkController;
   ParticleSystem particles;
+
+  // Boost
+  public Image retFillNonVR;
+  public Image retFillVR;
+  private float charge = 0;
+  private float maxCharge = 150;
+  private bool boost = false;
 
 
   ////////////////////////////
@@ -56,6 +64,9 @@ public class PlayerMovement : MonoBehaviour {
     NetworkController.OnReady(delegate() {
       GetComponent<Rigidbody>().useGravity = true;
     });
+
+    if(gameObject == GameAttributes.mainPlayer)
+      SetupBoost();
 	}
 
   // Before Every Physics Calculation, add force to player
@@ -63,7 +74,10 @@ public class PlayerMovement : MonoBehaviour {
     body.AddForce(direction * speed * speedMultiplier); 
   }
 
-
+  void Update () {
+    if(gameObject == GameAttributes.mainPlayer)
+      CheckBoost();
+  }
   /////////////////////////////////////
   // Methods Relating to All Players //
   /////////////////////////////////////
@@ -71,9 +85,11 @@ public class PlayerMovement : MonoBehaviour {
   public void Boost() {
     speedMultiplier = 3;
     playerNetworkController.Boost();
+    boost = true;
   }
   public void EndBoost() {
     speedMultiplier = 1;
+    boost = false;
   }
 
 
@@ -146,5 +162,72 @@ public class PlayerMovement : MonoBehaviour {
       body.angularVelocity = angularVelocity;
       transform.rotation = rotation;
     }
+  }
+
+
+  void SetupBoost() {
+    if (!GameAttributes.VR) {
+      retFillNonVR.type = Image.Type.Filled;
+      retFillNonVR.fillClockwise = true;
+      retFillNonVR.fillAmount = 0;
+    } else {
+      retFillVR.type = Image.Type.Filled;
+      retFillVR.fillClockwise = true;
+      retFillVR.fillAmount = 0;
+    }
+    particles = GameAttributes.camera.GetComponentInChildren<ParticleSystem>();
+  }
+  void CheckBoost() {
+
+    var ray = GameAttributes.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+    RaycastHit hit = new RaycastHit();
+
+    Physics.Raycast(ray, out hit, 1000f);
+
+    // If pointing at target who is not larger than self.
+    if (hit.collider != null
+        && hit.collider.name == "TriggerSphere"
+        //Prevents player from boosting into larger objects
+        && GetComponent<PlayerAttributes>().playerMass >= hit.transform.GetComponent<PlayerAttributes>().playerMass
+        && GetComponent<PlayerAttributes>().playerMass >= 7.5f
+        ) {
+      if(boost) {
+        charge -= 80 * Time.deltaTime;
+        if(charge <= 0) {
+          Invoke("ToggleBoostTimer", 2);
+          EndBoost();
+        }
+      }
+      else {
+        charge += 80 * Time.deltaTime;
+        if(charge >= maxCharge) {
+          //Will require server call to change playerMass
+          GetComponent<PlayerAttributes>().playerMass -= 2.5f;
+          Boost();
+        }
+      }
+    }
+    // If not pointing at target
+    else {
+      if(charge > 0) {
+        if(boost) {
+          charge -= 80 * Time.deltaTime;
+        } else {
+          charge -= 40 * Time.deltaTime;
+        }
+      }
+      else if (charge <= 0 && boost) {
+        Invoke("ToggleBoostTimer", 2);
+        EndBoost();
+      }
+    }
+    if (!GameAttributes.VR) {
+      retFillNonVR.fillAmount = (charge)/maxCharge;
+    } else {
+      retFillVR.fillAmount = (charge)/maxCharge;
+    }
+  }
+  void ToggleBoostTimer() {
+    EndBoost();
   }
 }

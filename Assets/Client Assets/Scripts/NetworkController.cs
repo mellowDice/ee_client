@@ -45,7 +45,7 @@ public class NetworkController : MonoBehaviour {
     ter.BuildMesh(e.data["terrain"]);
 
     Ready();    
-    PlayerNetworkController.InstantiateMainPlayer(e.data["id"].ToString(), PlayerNetworkController.GetJSONFloat(e.data, "mass"));
+    PlayerNetworkController.InstantiateMainPlayer(PlayerNetworkController.GetJSONString(e.data, "id"), PlayerNetworkController.GetJSONFloat(e.data, "mass"));
 
     var obs = GetComponent<ObstaclesController>();
     obs.CreateObstacle(e.data["obstacles"]);

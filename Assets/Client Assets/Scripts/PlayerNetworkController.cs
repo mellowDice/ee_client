@@ -6,7 +6,7 @@ using System.Collections.Generic;
 public class PlayerNetworkController : MonoBehaviour {
 
   static SocketIOComponent socket;
-  Dictionary<string, GameObject> players;
+  static Dictionary<string, GameObject> players;
   public GameObject playerPrefab;
 
 
@@ -21,6 +21,7 @@ public class PlayerNetworkController : MonoBehaviour {
     socket.On("otherPlayerKilled", OnOtherPlayerDespawn);
     socket.On("otherPlayerLook", OnOtherPlayerLook);
     socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
+    socket.On("player_mass_update", OnPlayerMassUpdate);
     players = new Dictionary<string, GameObject> ();
   }
 
@@ -42,6 +43,17 @@ public class PlayerNetworkController : MonoBehaviour {
   // Methods Related to Main Player //
   ////////////////////////////////////
 
+  public static void InstantiateMainPlayer(string id, float mass) {
+    players.Add(id, GameAttributes.mainPlayer);
+    GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().id = id;
+    GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().playerMass = mass;
+  }
+
+  public static void OnPlayerMassUpdate(SocketIOEvent e) {
+    var id = e.data["id"].ToString();
+    var mass = GetJSONFloat(e.data, "mass");
+    players[id].GetComponent<PlayerAttributes>().playerMass = mass;
+  }
   public static void Die(SocketIOEvent e) {
 
   }
@@ -56,6 +68,10 @@ public class PlayerNetworkController : MonoBehaviour {
     j.AddField("look_z", direction.z);
 
     socket.Emit("look", j);
+  }
+
+  public void Boost () {
+    socket.Emit("Boost", new JSONObject());
   }
 
   // PLAYER STATE DATA SEND: Sends data about current player state to server
@@ -99,6 +115,8 @@ public class PlayerNetworkController : MonoBehaviour {
       player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
       players.Add(e.data["id"].ToString(), player);
       player.GetComponent<PlayerAttributes>().id = e.data["id"].ToString();
+      Debug.Log("MASSD " + GetJSONFloat(e.data, "mass"));
+      player.GetComponent<PlayerAttributes>().playerMass = GetJSONFloat(e.data, "mass");
     });
   }
 
@@ -134,7 +152,7 @@ public class PlayerNetworkController : MonoBehaviour {
   // Helper Methods //
   ////////////////////
 
-  float GetJSONFloat (JSONObject data, string key) {
+  public static float GetJSONFloat (JSONObject data, string key) {
     return float.Parse(data[key].ToString());
   }
 }

@@ -70,6 +70,7 @@ public class PlayerMovement : MonoBehaviour {
 
   public void Boost() {
     speedMultiplier = 3;
+    playerNetworkController.Boost();
   }
   public void EndBoost() {
     speedMultiplier = 1;
@@ -123,19 +124,19 @@ public class PlayerMovement : MonoBehaviour {
     var resetState = false;
     var bodyPosition = transform.position;
     var bodyRotation = transform.rotation;
-    // if(Vector3.Distance(body.velocity, velocity) > 0.1) {
-    //   Debug.Log("VELOCITY MISMATCH:" + Vector3.Distance(body.velocity, velocity));
-    //   resetState = true;
-    // }
-    // if(Vector3.Distance(body.angularVelocity, angularVelocity) > 0.1) {
-    //   Debug.Log("ANGULAR VELOCITY MISMATCH:" + Vector3.Distance(body.angularVelocity, angularVelocity));
-    //   resetState = true;
-    // }
-    // if(Vector3.Distance(bodyPosition, position) > 0.1) {
-    //   Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
-    //   resetState = true;
-    // }
-    if(Quaternion.Dot(bodyRotation, rotation) < 0.98) {
+    if(Vector3.Distance(body.velocity, velocity) > 0.1) {
+      Debug.Log("VELOCITY MISMATCH:" + Vector3.Distance(body.velocity, velocity));
+      resetState = true;
+    }
+    if(Vector3.Distance(body.angularVelocity, angularVelocity) > 0.1) {
+      Debug.Log("ANGULAR VELOCITY MISMATCH:" + Vector3.Distance(body.angularVelocity, angularVelocity));
+      resetState = true;
+    }
+    if(Vector3.Distance(bodyPosition, position) > 0.1) {
+      Debug.Log("POSITION MISMATCH:" + Vector3.Distance(bodyPosition, position));
+      resetState = true;
+    }
+    if(Quaternion.Dot(bodyRotation, rotation) < 0.95) {
       Debug.Log("ROTATION MISMATCH:" + Quaternion.Dot(bodyRotation, rotation));
       resetState = true;
     }

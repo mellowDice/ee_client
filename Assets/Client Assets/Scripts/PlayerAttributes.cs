@@ -6,6 +6,7 @@ public class PlayerAttributes : MonoBehaviour {
   private float pMass = 10;
   public string id;
   public float TEMP;
+  public bool zombiePlayer = false;
 
   // PROPERTIES ///
   public float playerMass {

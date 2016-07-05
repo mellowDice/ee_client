@@ -13,6 +13,8 @@ public class GameAttributes : MonoBehaviour {
   public GameObject _mainPlayer;
   public static GameObject mainPlayer;
   public static Camera camera;
+  public GameObject _floor;
+  public static GameObject floor;
 
   // Inputs
   public GameObject VRGroup;
@@ -26,12 +28,14 @@ public class GameAttributes : MonoBehaviour {
     computerControlledMainPlayer = _computerControlledMainPlayer;
     mainPlayer = _mainPlayer;
     disableLandscape = _disableLandscape;
+    floor = _floor;
     camera = VR ? GVR.GetComponentInChildren<Camera>() : NonVRCamera;
   }
 
   void Start() {
     VRGroup.SetActive(VR);
     NonVRGroup.SetActive(!VR);
+    floor.SetActive(disableLandscape);
   }
 
 }

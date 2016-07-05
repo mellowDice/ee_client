@@ -7,6 +7,7 @@ public class PlayerNetworkController : MonoBehaviour {
 
   static SocketIOComponent socket;
   static Dictionary<string, GameObject> players;
+  static PlayerAttributes mainPlayerAttributes;
   public GameObject playerPrefab;
 
 
@@ -22,7 +23,9 @@ public class PlayerNetworkController : MonoBehaviour {
     socket.On("otherPlayerLook", OnOtherPlayerLook);
     socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
     socket.On("player_mass_update", OnPlayerMassUpdate);
+    socket.On("initialize_main_player", InitializeMainPlayer);
     players = new Dictionary<string, GameObject> ();
+    mainPlayerAttributes = GameAttributes.mainPlayer.GetComponent<PlayerAttributes>();
   }
 
 
@@ -30,6 +33,7 @@ public class PlayerNetworkController : MonoBehaviour {
   // Methods Related to Any Player //
   ///////////////////////////////////
 
+  // KILL: Emit kill message when any player is killed
   public static void Kill(string playerID, float xPosition, float zPosition) {
     var j = new JSONObject();
     j.AddField("id", playerID);
@@ -39,10 +43,22 @@ public class PlayerNetworkController : MonoBehaviour {
     Debug.Log("kill player " + j["id"].ToString());
   }
 
+  // ON KILLED: When notified that any player is killed
   public static void OnKilled(SocketIOEvent e) {
     GameObject killedPlayer;
     if(players.TryGetValue(GetJSONString(e.data, "id"), out killedPlayer)) {
       Destroy(killedPlayer, 0.0f);
+    }
+  }
+
+  // ON PLAYER MASS UPDATE: Updates the mass of a player
+  public static void OnPlayerMassUpdate(SocketIOEvent e) {
+    var id = e.data["id"].ToString();
+    var mass = GetJSONFloat(e.data, "mass");
+    GameObject massChangePlayer;
+    if(players.TryGetValue(id, out massChangePlayer)) {
+      massChangePlayer.GetComponent<PlayerAttributes>().id = id;
+      massChangePlayer.GetComponent<PlayerAttributes>().playerMass = mass;
     }
   }
 
@@ -51,39 +67,32 @@ public class PlayerNetworkController : MonoBehaviour {
   // Methods Related to Main Player //
   ////////////////////////////////////
 
-  public static void InstantiateMainPlayer(string id, float mass) {
+  // INITIALIZE MAIN PLAYER: Sets up player ID and mass upon game start
+  public static void InitializeMainPlayer(SocketIOEvent e) {
+    var id = PlayerNetworkController.GetJSONString(e.data, "id");
+    var mass = PlayerNetworkController.GetJSONFloat(e.data, "mass");
+
     players.Add(id, GameAttributes.mainPlayer);
     GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().id = id;
     GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().playerMass = mass;
-    Debug.Log("id " + id);
+    Debug.Log("id " + id + " mass " + mass);
   }
 
-  public static void OnPlayerMassUpdate(SocketIOEvent e) {
-    var id = e.data["id"].ToString();
-    var mass = GetJSONFloat(e.data, "mass");
-    players[id].GetComponent<PlayerAttributes>().playerMass = mass;
-  }
-  public static void Die(SocketIOEvent e) {
-
-  }
-
-  // LOOK: Sends data about direction player is facing to server
+  // LOOK: Broadcasts direction main player is facing
   public void Look (Vector3 direction) {
     var j = new JSONObject(JSONObject.Type.OBJECT);
-
-    // What direction the user is facing
     j.AddField("look_x", direction.x);
     j.AddField("look_y", direction.y);
     j.AddField("look_z", direction.z);
-
     socket.Emit("look", j);
   }
 
+  // BOOST: Broadcasts that main player is using boost
   public void Boost () {
     socket.Emit("Boost", new JSONObject());
   }
 
-  // PLAYER STATE DATA SEND: Sends data about current player state to server
+  // PLAYER STATE DATA SEND: Broadcasts main player state, so other players can reconcile
   public void PlayerStateSend (Vector3 position, Vector3 velocity, Vector3 angularVelocity, Quaternion rotation) {
     var j = new JSONObject(JSONObject.Type.OBJECT);
 

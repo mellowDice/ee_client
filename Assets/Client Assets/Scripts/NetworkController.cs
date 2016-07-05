@@ -18,7 +18,8 @@ public class NetworkController : MonoBehaviour {
   }
 	void Start () {
     socket.On("open", OnConnected);
-    socket.On("load", OnLoad);
+    socket.On("landscape", OnReceiveLandscape);
+    socket.On("field_objects", OnReceiveFieldObjects);
 	}
 
   public static void OnReady(Callback cb) {
@@ -38,20 +39,20 @@ public class NetworkController : MonoBehaviour {
     Debug.Log("Connected to server.");
   }
 
-  void OnLoad(SocketIOEvent e) {
-    if(GameAttributes.disableLandscape) return;
-    Debug.Log("Building Terrain...");
-    var ter = GetComponent<CreateTerrainMesh>();
-    ter.BuildMesh(e.data["terrain"]);
+  void OnReceiveLandscape(SocketIOEvent e) {
+    if(!GameAttributes.disableLandscape) {
+      Debug.Log("Building Terrain...");
+      var ter = GetComponent<CreateTerrainMesh>();
+      ter.BuildMesh(e.data["terrain"]);
+    }
+    Ready();  // for now, assume everything is loaded once landscape is received
+  }
 
-    Ready();    
-    PlayerNetworkController.InstantiateMainPlayer(PlayerNetworkController.GetJSONString(e.data, "id"), PlayerNetworkController.GetJSONFloat(e.data, "mass"));
-
+  void OnReceiveFieldObjects(SocketIOEvent e) {
     var obs = GetComponent<ObstaclesController>();
     obs.CreateObstacle(e.data["obstacles"]);
 
     var foods = GetComponent<FoodController>();
     foods.CreateFood(e.data["food"]);
-
   }
 }

@@ -6,6 +6,7 @@ public class PlayerAttributes : MonoBehaviour {
   private float pMass = 10;
   public string id;
   public float TEMP;
+  public bool zombiePlayer = false;
 
   // PROPERTIES ///
   public float playerMass {
@@ -14,7 +15,12 @@ public class PlayerAttributes : MonoBehaviour {
       pMass = value;
       var scale = Mathf.Pow(pMass, 1f/3f);
       transform.localScale = new Vector3(scale*0.95f, scale, scale);
-      GetComponent<Rigidbody>().mass = Mathf.Pow(pMass/10, 1/2);
+      GetComponent<Rigidbody>().mass = Mathf.Pow(pMass/50, 1/2);
+
+      // Also set drag and speed to avoid accidental mismatch
+      GetComponent<Rigidbody>().drag = 0.6f;
+      GetComponent<PlayerMovement>().speed = 4;
+
       TEMP = pMass;
     }
   }

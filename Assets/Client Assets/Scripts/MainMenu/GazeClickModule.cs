@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 
-public class GazeInputModule : PointerInputModule {
+public class GazeClickModule : PointerInputModule {
     public enum Mode { Click = 0, Gaze };
     public Mode mode;
 

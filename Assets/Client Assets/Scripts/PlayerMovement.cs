@@ -39,7 +39,7 @@ public class PlayerMovement : MonoBehaviour {
     playerAttributes = GetComponent<PlayerAttributes>();
 
     // Additional setup only for main player
-    if(playerAttributes.mainPlayer) {
+    if(playerAttributes.mainPlayer || playerAttributes.zombiePlayer) {
       playerNetworkController = GameObject.Find("Network").GetComponent<PlayerNetworkController>();
       
       // Set up direction and state monitoring
@@ -47,7 +47,7 @@ public class PlayerMovement : MonoBehaviour {
       InvokeRepeating("SendMainPlayerState", 0f, 0.1f);
 
       // Set up for computer controlled main player
-      if(GameAttributes.computerControlledMainPlayer) {
+      if(GameAttributes.computerControlledMainPlayer || playerAttributes.zombiePlayer) {
         InvokeRepeating("UpdateComputerControlledDirection", 2.5f, 5f);
       }
     }
@@ -92,15 +92,17 @@ public class PlayerMovement : MonoBehaviour {
     boost = false;
   }
 
-
-  /////////////////////////////////////
-  // Methods Relating to Main Player //
-  /////////////////////////////////////
+  /////////////////////////////////////////////////
+  // Methods Relating to Main and Zombie Players //
+  /////////////////////////////////////////////////
 
   // Update player direction based on where camera is facing
   void UpdateAndSendPlayerDirection() {
-    var camDirection = GameAttributes.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)).direction;
-    direction = GameAttributes.computerControlledMainPlayer ? computerControlledDirection : camDirection;
+    if (GameAttributes.computerControlledMainPlayer || playerAttributes.zombiePlayer) {
+      direction = computerControlledDirection;
+    } else {
+      direction = GameAttributes.camera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0)).direction;
+    }
     playerNetworkController.Look(direction);
   }
 
@@ -110,8 +112,12 @@ public class PlayerMovement : MonoBehaviour {
     var velocity = body.velocity;
     var angularVelocity = body.angularVelocity;
     var rotation = transform.rotation;
-    playerNetworkController.PlayerStateSend(position, velocity, angularVelocity, rotation);
+    playerNetworkController.PlayerStateSend(position, velocity, angularVelocity, rotation, playerAttributes.id);
   }
+
+  /////////////////////////////////////
+  // Methods Relating to Main Player //
+  /////////////////////////////////////
 
   // Keeps camera situated above ball
   public virtual void setCameraPosition() {

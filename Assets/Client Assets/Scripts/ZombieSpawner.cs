@@ -29,7 +29,7 @@ public class ZombieSpawner : MonoBehaviour {
     // Debug.Log(count.Length);
   }
 
-  public void ZombieCollide (GameObject child) {
+  public static void ZombieCollide (GameObject child) {
     Destroy(child);
   }
 }

@@ -24,6 +24,7 @@ public class PlayerNetworkController : MonoBehaviour {
     socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
     socket.On("player_mass_update", OnPlayerMassUpdate);
     socket.On("initialize_main_player", InitializeMainPlayer);
+    socket.On("initialize_zombie_player", InitializeZombiePlayer);
     players = new Dictionary<string, GameObject> ();
     mainPlayerAttributes = GameAttributes.mainPlayer.GetComponent<PlayerAttributes>();
   }
@@ -63,19 +64,44 @@ public class PlayerNetworkController : MonoBehaviour {
   }
 
 
+  ///////////////////////////////////////
+  // Methods Related to Zombie Players //
+  ///////////////////////////////////////
+
+  public void InitializeZombiePlayer(SocketIOEvent e) {
+    var id = GetJSONString(e.data, "id");
+    var mass = GetJSONFloat(e.data, "mass");
+    var x = GetJSONFloat(e.data, "x");
+    var z = GetJSONFloat(e.data, "z");
+    NetworkController.OnReady(delegate() {
+      var player = Instantiate(playerPrefab);
+
+      // initialize with location eventually
+      players.Add(id, player);
+      player.GetComponent<Transform>().position = new Vector3(x, 30f, z); // Drop below the map, will be corrected upon start
+      player.GetComponent<PlayerAttributes>().id = id;
+      player.GetComponent<PlayerAttributes>().playerMass = mass;
+      player.GetComponent<PlayerAttributes>().zombiePlayer = true;
+    });
+  }
+
+
   ////////////////////////////////////
   // Methods Related to Main Player //
   ////////////////////////////////////
 
   // INITIALIZE MAIN PLAYER: Sets up player ID and mass upon game start
   public static void InitializeMainPlayer(SocketIOEvent e) {
-    var id = PlayerNetworkController.GetJSONString(e.data, "id");
-    var mass = PlayerNetworkController.GetJSONFloat(e.data, "mass");
+    var player = GameAttributes.mainPlayer;
+    var id = GetJSONString(e.data, "id");
+    var mass = GetJSONFloat(e.data, "mass");
+    var x = GetJSONFloat(e.data, "x");
+    var z = GetJSONFloat(e.data, "z");
 
     players.Add(id, GameAttributes.mainPlayer);
-    GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().id = id;
-    GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().playerMass = mass;
-    Debug.Log("id " + id + " mass " + mass);
+    player.GetComponent<Transform>().position = new Vector3(x, 30f, z); // Drop below the map, will be corrected upon start
+    player.GetComponent<PlayerAttributes>().id = id;
+    player.GetComponent<PlayerAttributes>().playerMass = mass;
   }
 
   // LOOK: Broadcasts direction main player is facing
@@ -93,8 +119,11 @@ public class PlayerNetworkController : MonoBehaviour {
   }
 
   // PLAYER STATE DATA SEND: Broadcasts main player state, so other players can reconcile
-  public void PlayerStateSend (Vector3 position, Vector3 velocity, Vector3 angularVelocity, Quaternion rotation) {
+  public void PlayerStateSend (Vector3 position, Vector3 velocity, Vector3 angularVelocity, Quaternion rotation, string id) {
     var j = new JSONObject(JSONObject.Type.OBJECT);
+
+    // User ID
+    j.AddField("id", id);
 
     // User position
     j.AddField("position_x", position.x);
@@ -130,11 +159,12 @@ public class PlayerNetworkController : MonoBehaviour {
   void OnOtherPlayerSpawn(SocketIOEvent e) {
     NetworkController.OnReady(delegate() {
       var player = Instantiate(playerPrefab);
-      player.GetComponent<Transform>().position = new Vector3(125f, -50f, 125f); // Drop below the map, will be corrected upon start
+      player.GetComponent<Transform>().position = new Vector3(Random.Range(0,1000), -50f, Random.Range(0,1000)); // Drop below the map, will be corrected upon start
       players.Add(GetJSONString(e.data, "id"), player);
       player.GetComponent<PlayerAttributes>().id = GetJSONString(e.data, "id");
       Debug.Log("MASSD " + GetJSONFloat(e.data, "mass"));
       player.GetComponent<PlayerAttributes>().playerMass = GetJSONFloat(e.data, "mass");
+      player.GetComponent<PlayerCollision>().enabled = false;
     });
   }
 

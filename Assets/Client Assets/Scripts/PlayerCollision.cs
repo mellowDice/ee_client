@@ -5,8 +5,6 @@ using System.Collections;
 
 public class PlayerCollision : MonoBehaviour {
   ParticleSystem particles;
-  public GameObject zombieSpawner;
-  public GameObject obstaclePrefab;
   PlayerMovement playerMovement;
 
   void Awake() {
@@ -21,24 +19,23 @@ public class PlayerCollision : MonoBehaviour {
   //COLLISION CHECKER//
   /////////////////////
 	void OnTriggerEnter(Collider other) {
-      Debug.Log("---COLLISION---");
-
     if (other.gameObject.CompareTag("Zombie") || other.gameObject.CompareTag("Player")) {
       var otherPlayer = other.transform.parent.gameObject;
       var otherPlayerAttributes = otherPlayer.GetComponent<PlayerAttributes>();
-      var mainPlayerAttributes = GetComponent<PlayerAttributes>();
+      var playerAttributes = GetComponent<PlayerAttributes>();
 
       // If main player is smaller
-      if (otherPlayerAttributes.playerMass > mainPlayerAttributes.playerMass) {
-        PlayerNetworkController.Kill(mainPlayerAttributes.id, GetComponent<Transform>().position.x, GetComponent<Transform>().position.z);
+      if (otherPlayerAttributes.playerMass > playerAttributes.playerMass) {
+        PlayerNetworkController.Kill(playerAttributes.id, GetComponent<Transform>().position.x, GetComponent<Transform>().position.z);
       }
 
       // If other player is smaller
-      else if (otherPlayerAttributes.playerMass < mainPlayerAttributes.playerMass){
+      else if (otherPlayerAttributes.playerMass < playerAttributes.playerMass){
         PlayerNetworkController.Kill(otherPlayerAttributes.id, other.GetComponent<Transform>().position.x, other.GetComponent<Transform>().position.z);
+        Debug.Log(GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().id + " " + playerAttributes.id);
+        if(GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().id == playerAttributes.id) particles.Play();
         if (other.gameObject.CompareTag("Zombie")) {
-          particles.Play();
-          zombieSpawner.GetComponent<ZombieSpawner>().ZombieCollide(other.transform.parent.gameObject);
+          ZombieSpawner.ZombieCollide(other.transform.parent.gameObject);
         }
       }
     }

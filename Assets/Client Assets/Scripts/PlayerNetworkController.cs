@@ -28,10 +28,10 @@ public class PlayerNetworkController : MonoBehaviour {
       socket.On("initialize_zombie_player", InitializeZombiePlayer);
       players = new Dictionary<string, GameObject> ();
       mainPlayerAttributes = GameAttributes.mainPlayer.GetComponent<PlayerAttributes>();
-      // NetworkController.OnReady(delegate() {
-      //   socket.Emit("initialize_main", new JSONObject());
-      //   Debug.Log("Initializing");
-      // });
+      NetworkController.OnReady(delegate() {
+        socket.Emit("initialize_main", new JSONObject());
+        Debug.Log("Initializing");
+      });
     }
   }
 

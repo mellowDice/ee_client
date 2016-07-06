@@ -7,12 +7,7 @@ public class MainMenu : MonoBehaviour {
   public bool changeScenes = true;
   public Animator fadeToBlack;
   public AnimationClip fadeClip;
-
-  private Panels panel;
 	// Use this for initialization
-	void Awake () {
-    panel = GetComponent<Panels>();
-	}
 	
 	// Update is called once per frame
 	public void StartButton () {
@@ -21,7 +16,6 @@ public class MainMenu : MonoBehaviour {
   }
 
   void LoadDelayed () {
-    panel.HideMenu();
     SceneManager.LoadScene(nextScene);
   }
 }

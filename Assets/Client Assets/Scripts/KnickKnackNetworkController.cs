@@ -36,8 +36,9 @@ public class KnickKnackNetworkController : MonoBehaviour {
   }
 
   public static void FoodEaten (string id) {
-    var foodId = new JSONObject(JSONObject.Type.OBJECT);
+    var foodId = new JSONObject();
     foodId.AddField("id", id);
+    Debug.Log("foodID" + id + foodId);
     socket.Emit("eat", foodId);
   }
 
@@ -49,7 +50,7 @@ public class KnickKnackNetworkController : MonoBehaviour {
   }
 
   public static void ObstacleCollision (string id) {
-    var objectId = new JSONObject(JSONObject.Type.OBJECT);
+    var objectId = new JSONObject();
     objectId.AddField("id", id);
     socket.Emit("collision", objectId);
   }

@@ -14,7 +14,7 @@ public class ObstaclesController : MonoBehaviour {
 
     var length = obstacles.list.Count;
     for (var i = 0; i < length; i++) {
-      var id = obstacles[i]["id"].ToString();
+      var id = GetJSONString(obstacles[i], "id");
       var position = new Vector3(GetJSONFloat(obstacles[i], "x"),
                                                             100f,
                                  GetJSONFloat(obstacles[i], "z")
@@ -39,6 +39,10 @@ public class ObstaclesController : MonoBehaviour {
 
   float GetJSONFloat (JSONObject data, string key) {
     return float.Parse(data[key].ToString().Replace("\"", ""));
+  }
+
+  public static string GetJSONString (JSONObject data, string key) {
+    return data[key].ToString().Trim('"');
   }
 
 }

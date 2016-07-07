@@ -43,11 +43,15 @@ public class PlayerCollision : MonoBehaviour {
 
     if (other.gameObject.CompareTag("Obstacle")) {
       var id = other.GetComponent<ObstacleController>().id;
-      KnickKnackNetworkController.FoodEaten(id);
+      // Debug.Log(id);
+      other.gameObject.transform.parent.gameObject.GetComponent<ObstaclesController>().ToggleState(id);
+      KnickKnackNetworkController.ObstacleCollision(id);
     }
 
     if (other.gameObject.CompareTag("Food")) {
       var id = other.GetComponent<FoodController>().id;
+      // Debug.Log(id);
+      other.gameObject.transform.parent.gameObject.GetComponent<FoodsController>().ToggleState(id);
       KnickKnackNetworkController.FoodEaten(id);
     }
   }

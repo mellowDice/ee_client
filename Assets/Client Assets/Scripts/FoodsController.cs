@@ -14,7 +14,7 @@ public class FoodsController : MonoBehaviour {
 
     var length = foods.list.Count;
     for (var i = 0; i < length; i++) {
-      var id = foods[i]["id"].ToString();
+      var id = GetJSONString(foods[i], "id");
       var position = new Vector3(GetJSONFloat(foods[i], "x"),
                                                             100f,
                                  GetJSONFloat(foods[i], "z")
@@ -33,12 +33,17 @@ public class FoodsController : MonoBehaviour {
 
   public void ToggleState (string id) {
     objectState = foodsDict[id].activeSelf;
+    Debug.Log("state" + objectState);
     foodsDict[id].SetActive(!objectState);
   }
 
 
   float GetJSONFloat (JSONObject data, string key) {
     return float.Parse(data[key].ToString().Replace("\"", ""));
+  }
+
+  public static string GetJSONString (JSONObject data, string key) {
+    return data[key].ToString().Trim('"');
   }
 
 }

@@ -23,6 +23,7 @@ public class PlayerNetworkController : MonoBehaviour {
       socket.On("player_killed", OnKilled);
       socket.On("otherPlayerLook", OnOtherPlayerLook);
       socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
+      socket.On("other_player_collided_with_obstacle", OnOtherPlayerCollidedWithObstacle);
       socket.On("player_mass_update", OnPlayerMassUpdate);
       socket.On("initialize_main_player", InitializeMainPlayer);
       socket.On("initialize_zombie_player", InitializeZombiePlayer);
@@ -61,6 +62,16 @@ public class PlayerNetworkController : MonoBehaviour {
         socket.Emit("initialize_main", new JSONObject());
       }
       players.Remove(id);
+    }
+  }
+
+
+  // ON KILLED: When notified that any player is killed
+  public static void OnOtherPlayerCollidedWithObstacle(SocketIOEvent e) {
+    GameObject collidedPlayer;
+    string playerId = GetJSONString(e.data, "player_id");
+    if(players.TryGetValue(playerId, out collidedPlayer)) {
+      collidedPlayer.GetComponent<PlayerMovement>().HitObstacle();
     }
   }
 

@@ -16,7 +16,6 @@ public class KnickKnackNetworkController : MonoBehaviour {
     socket = NetworkController.socket;
     socket.On("field_objects", CreateKnickknacks);
     socket.On("eaten", ToggleFoodState);
-    socket.On("collided", ToggleObstacleState);
 	}
 
   ////////////////////////////////////
@@ -45,13 +44,11 @@ public class KnickKnackNetworkController : MonoBehaviour {
   ////////////////////////////////////
   //  Methods Related to Obstacles  //
   ////////////////////////////////////
-  void ToggleObstacleState (SocketIOEvent e) {
-    obstaclePrefab.GetComponent<ObstaclesController>().CreateObstacle(e.data["obstacles"]);
-  }
 
-  public static void ObstacleCollision (string id) {
+  public static void ObstacleCollision (string playerId, string obstacleId) {
     var objectId = new JSONObject();
-    objectId.AddField("id", id);
+    objectId.AddField("obstacle_id", obstacleId);
+    objectId.AddField("player_id", playerId);
     socket.Emit("collision", objectId);
   }
 }

@@ -16,7 +16,6 @@ public class PlayerMovement : MonoBehaviour {
   // Movement variables
   public float force = 5f;
   public float maxVelocity = 5f;
-  float speedMultiplier = 1f;
   Vector3 computerControlledDirection = new Vector3(1,0,0);
   Vector3 direction = new Vector3(1,0,0);
 
@@ -50,8 +49,8 @@ public class PlayerMovement : MonoBehaviour {
       playerNetworkController = GameObject.Find("Network").GetComponent<PlayerNetworkController>();
       
       // Set up direction and state monitoring
-      InvokeRepeating("UpdateAndSendPlayerDirection", 0f, 0.1f);
-      InvokeRepeating("SendMainPlayerState", 0f, 0.1f);
+      InvokeRepeating("UpdateAndSendPlayerDirection", 0f, 0.2f);
+      InvokeRepeating("SendMainPlayerState", 0f, 0.2f);
 
       // Set up for computer controlled main player
       if(GameAttributes.computerControlledMainPlayer || playerAttributes.zombiePlayer) {
@@ -59,7 +58,6 @@ public class PlayerMovement : MonoBehaviour {
       }
     }
     NetworkController.OnReady(delegate() {
-      speedMultiplier = 1f;
       RaycastHit hit = new RaycastHit();
       if(Physics.Raycast(transform.position, Vector3.down, out hit)) {
         transform.position -= new Vector3(0 , hit.distance - 10 , 0);
@@ -78,6 +76,7 @@ public class PlayerMovement : MonoBehaviour {
 
   // Before Every Physics Calculation, add force to player
   void FixedUpdate () {
+    var speedMultiplier = boost ? BOOST_MULTIPLIER  : 1f;
     if(Vector3.Dot(direction, GetComponent<Rigidbody>().velocity) <= maxVelocity * speedMultiplier) {
       body.AddForce(direction * force * speedMultiplier);
     }
@@ -92,12 +91,12 @@ public class PlayerMovement : MonoBehaviour {
   /////////////////////////////////////
 
   public void Boost() {
-    speedMultiplier = BOOST_MULTIPLIER;
-    playerNetworkController.Boost();
+    Debug.Log("JUST ENABLED BOOST");
+    playerNetworkController.Boost(playerAttributes.id);
+    Debug.Log("Called Player Network Controller Boost FN");
     boost = true;
   }
   public void EndBoost() {
-    speedMultiplier = 1;
     boost = false;
   }
 
@@ -210,14 +209,13 @@ public class PlayerMovement : MonoBehaviour {
         charge -= 80 * Time.deltaTime;
         if(charge <= 0) {
           Invoke("ToggleBoostTimer", 2);
-          // EndBoost();
+          EndBoost();
         }
       }
       else {
         charge += 80 * Time.deltaTime;
         if(charge >= maxCharge) {
           //Will require server call to change playerMass
-          GetComponent<PlayerAttributes>().playerMass -= 2.5f;
           Boost();
         }
       }

@@ -4,12 +4,19 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour {
 
+  // Constants
+  const float MASS_RATIO_REQUIRED_TO_BOOST = 1.1f; // must be 10x bigger
+  const float MASS_MARGIN_REQUIRED_TO_BOOST = 2.5f; // must be 10x bigger
+  const float BOOST_MULTIPLIER = 5;
+  const float MINIMUM_SIZE_TO_BOOST = 10;
+
   // Player Rigidbody
   Rigidbody body;
 
   // Movement variables
-  public float speed = 5f;
-  float speedMultiplier = 0f;
+  public float force = 5f;
+  public float maxVelocity = 5f;
+  float speedMultiplier = 1f;
   Vector3 computerControlledDirection = new Vector3(1,0,0);
   Vector3 direction = new Vector3(1,0,0);
 
@@ -71,7 +78,9 @@ public class PlayerMovement : MonoBehaviour {
 
   // Before Every Physics Calculation, add force to player
   void FixedUpdate () {
-    body.AddForce(direction * speed * speedMultiplier); 
+    if(Vector3.Dot(direction, GetComponent<Rigidbody>().velocity) <= maxVelocity * speedMultiplier) {
+      body.AddForce(direction * force * speedMultiplier);
+    }
   }
 
   void Update () {
@@ -83,7 +92,7 @@ public class PlayerMovement : MonoBehaviour {
   /////////////////////////////////////
 
   public void Boost() {
-    speedMultiplier = 3;
+    speedMultiplier = BOOST_MULTIPLIER;
     playerNetworkController.Boost();
     boost = true;
   }
@@ -193,8 +202,9 @@ public class PlayerMovement : MonoBehaviour {
     if (hit.collider != null
         && hit.collider.name == "TriggerSphere"
         //Prevents player from boosting into larger objects
-        && GetComponent<PlayerAttributes>().playerMass >= hit.transform.GetComponent<PlayerAttributes>().playerMass
-        && GetComponent<PlayerAttributes>().playerMass >= 7.5f
+        && GetComponent<PlayerAttributes>().playerMass >= hit.transform.GetComponent<PlayerAttributes>().playerMass * MASS_RATIO_REQUIRED_TO_BOOST
+        && GetComponent<PlayerAttributes>().playerMass >= hit.transform.GetComponent<PlayerAttributes>().playerMass + MASS_MARGIN_REQUIRED_TO_BOOST
+        && GetComponent<PlayerAttributes>().playerMass >= MINIMUM_SIZE_TO_BOOST
         ) {
       if(boost) {
         charge -= 80 * Time.deltaTime;

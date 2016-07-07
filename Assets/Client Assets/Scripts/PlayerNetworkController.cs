@@ -16,17 +16,23 @@ public class PlayerNetworkController : MonoBehaviour {
   ////////////////////////////
 
   void Start () {
-    socket = NetworkController.socket;
-    socket.On("spawn", OnOtherPlayerSpawn);
-    socket.On("onEndSpawn", OnOtherPlayerDespawn);
-    socket.On("player_killed", OnKilled);
-    socket.On("otherPlayerLook", OnOtherPlayerLook);
-    socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
-    socket.On("player_mass_update", OnPlayerMassUpdate);
-    socket.On("initialize_main_player", InitializeMainPlayer);
-    socket.On("initialize_zombie_player", InitializeZombiePlayer);
-    players = new Dictionary<string, GameObject> ();
-    mainPlayerAttributes = GameAttributes.mainPlayer.GetComponent<PlayerAttributes>();
+    if (socket == null) {
+      socket = NetworkController.socket;
+      socket.On("spawn", OnOtherPlayerSpawn);
+      socket.On("onEndSpawn", OnOtherPlayerDespawn);
+      socket.On("player_killed", OnKilled);
+      socket.On("otherPlayerLook", OnOtherPlayerLook);
+      socket.On("otherPlayerStateInfo", OnOtherPlayerStateReceived);
+      socket.On("player_mass_update", OnPlayerMassUpdate);
+      socket.On("initialize_main_player", InitializeMainPlayer);
+      socket.On("initialize_zombie_player", InitializeZombiePlayer);
+      players = new Dictionary<string, GameObject> ();
+      mainPlayerAttributes = GameAttributes.mainPlayer.GetComponent<PlayerAttributes>();
+      NetworkController.OnReady(delegate() {
+        socket.Emit("initialize_main", new JSONObject());
+        Debug.Log("Initializing");
+      });
+    }
   }
 
 
@@ -47,8 +53,16 @@ public class PlayerNetworkController : MonoBehaviour {
   // ON KILLED: When notified that any player is killed
   public static void OnKilled(SocketIOEvent e) {
     GameObject killedPlayer;
-    if(players.TryGetValue(GetJSONString(e.data, "id"), out killedPlayer)) {
-      Destroy(killedPlayer, 0.0f);
+    string id = GetJSONString(e.data, "id");
+    if(players.TryGetValue(id, out killedPlayer)) {
+      if(killedPlayer != GameAttributes.mainPlayer) {
+        Destroy(killedPlayer, 0.0f);
+      } else {
+        killedPlayer.SetActive(false);
+        socket.Emit("initialize_main", new JSONObject());
+        Debug.Log("Player died");
+      }
+      players.Remove(id);
     }
   }
 
@@ -97,7 +111,9 @@ public class PlayerNetworkController : MonoBehaviour {
     var mass = GetJSONFloat(e.data, "mass");
     var x = GetJSONFloat(e.data, "x");
     var z = GetJSONFloat(e.data, "z");
-
+    if (player.activeSelf == false) { 
+      player.SetActive(true);
+    }
     players.Add(id, GameAttributes.mainPlayer);
     player.GetComponent<Transform>().position = new Vector3(x, 30f, z); // Drop below the map, will be corrected upon start
     player.GetComponent<PlayerAttributes>().id = id;

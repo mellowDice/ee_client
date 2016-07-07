@@ -32,7 +32,8 @@ public class KnickKnackNetworkController : MonoBehaviour {
   //     Methods Related to Food    //
   ////////////////////////////////////
   void ToggleFoodState (SocketIOEvent e) {
-    foodPrefab.GetComponent<FoodsController>().CreateFood(e.data);
+    Debug.Log("newFood!" + e.data);
+    foodPrefab.GetComponent<FoodsController>().CreateFood(e.data["food"]);
   }
 
   public static void FoodEaten (string id) {
@@ -46,7 +47,7 @@ public class KnickKnackNetworkController : MonoBehaviour {
   //  Methods Related to Obstacles  //
   ////////////////////////////////////
   void ToggleObstacleState (SocketIOEvent e) {
-    obstaclePrefab.GetComponent<ObstaclesController>().CreateObstacle(e.data);
+    obstaclePrefab.GetComponent<ObstaclesController>().CreateObstacle(e.data["obstacles"]);
   }
 
   public static void ObstacleCollision (string id) {

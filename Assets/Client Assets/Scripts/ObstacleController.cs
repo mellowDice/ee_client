@@ -8,8 +8,12 @@ public class ObstacleController : MonoBehaviour {
     { get { return _id; } set { _id = value; } }
 
   void Start() {
+    NewPos();
+  }
+
+  public void NewPos () {
     Ray ray = new Ray(transform.position, Vector3.down);
-      RaycastHit hit;
+    RaycastHit hit;
       if(Physics.Raycast(ray, out hit)) {
         Debug.DrawLine(transform.position, hit.point, Color.green);
       }

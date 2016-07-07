@@ -11,7 +11,9 @@ public class FoodsController : MonoBehaviour {
   public void CreateFood (JSONObject foods)
   {
 
-
+    Debug.Log("foods" + foods);
+    Debug.Log(foods[0]);
+    Debug.Log(foods[0]["id"]);
     var length = foods.list.Count;
     for (var i = 0; i < length; i++) {
       var id = GetJSONString(foods[i], "id");
@@ -26,6 +28,8 @@ public class FoodsController : MonoBehaviour {
         food.GetComponent<FoodController>().id = id;
         foodsDict.Add(food.GetComponent<FoodController>().id, food);
       } else {
+        foodsDict[id].transform.position = position;
+        foodsDict[id].GetComponent<FoodController>().NewPos();
         ToggleState(id);
       }
     }
@@ -33,7 +37,7 @@ public class FoodsController : MonoBehaviour {
 
   public void ToggleState (string id) {
     objectState = foodsDict[id].activeSelf;
-    Debug.Log("state" + objectState);
+    // Debug.Log("state" + objectState);
     foodsDict[id].SetActive(!objectState);
   }
 

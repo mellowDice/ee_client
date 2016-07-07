@@ -2,11 +2,15 @@
 using System.Collections;
 
 public class FoodController : MonoBehaviour {
-  string _id;
+  public string _id;
   public string id
     { get { return _id; } set { _id = value; } }
 
   void Start () {
+    NewPos();
+  }
+
+  public void NewPos () {
     Ray ray = new Ray(transform.position, Vector3.down);
     RaycastHit hit;
       if(Physics.Raycast(ray, out hit)) {

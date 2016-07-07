@@ -26,6 +26,8 @@ public class ObstaclesController : MonoBehaviour {
         obstacle.GetComponent<ObstacleController>().id = id;
         obstaclesDict.Add(obstacle.GetComponent<ObstacleController>().id, obstacle);
       } else {
+        obstaclesDict[id].transform.position = position;
+        obstaclesDict[id].GetComponent<ObstacleController>().NewPos();
         ToggleState(id);
       }
     }

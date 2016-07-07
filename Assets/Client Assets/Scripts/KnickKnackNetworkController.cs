@@ -9,10 +9,11 @@ public class KnickKnackNetworkController : MonoBehaviour {
   static SocketIOComponent socket;
 
   void Awake () {
-    socket = NetworkController.socket;
+
   }
 
 	void Start () {
+    socket = NetworkController.socket;
     socket.On("field_objects", CreateKnickknacks);
     socket.On("eaten", ToggleFoodState);
     socket.On("collided", ToggleObstacleState);
@@ -22,6 +23,7 @@ public class KnickKnackNetworkController : MonoBehaviour {
   //       Create Knickknacks       //
   ////////////////////////////////////
   void CreateKnickknacks (SocketIOEvent e) {
+    Debug.Log("food" + e.data["food"]);
     foodPrefab.GetComponent<FoodsController>().CreateFood(e.data["food"]);
     obstaclePrefab.GetComponent<ObstaclesController>().CreateObstacle(e.data["obstacles"]);
   }
@@ -32,8 +34,11 @@ public class KnickKnackNetworkController : MonoBehaviour {
   void ToggleFoodState (SocketIOEvent e) {
     foodPrefab.GetComponent<FoodsController>().CreateFood(e.data);
   }
-  public void FoodEaten (string id) {
-    socket.Emit("eat", new JSONObject(id));
+
+  public static void FoodEaten (string id) {
+    var foodId = new JSONObject(JSONObject.Type.OBJECT);
+    foodId.AddField("id", id);
+    socket.Emit("eat", foodId);
   }
 
   ////////////////////////////////////
@@ -42,7 +47,10 @@ public class KnickKnackNetworkController : MonoBehaviour {
   void ToggleObstacleState (SocketIOEvent e) {
     obstaclePrefab.GetComponent<ObstaclesController>().CreateObstacle(e.data);
   }
-  public void ObstacleCollision (string id) {
-    socket.Emit("collision", new JSONObject(id));
+
+  public static void ObstacleCollision (string id) {
+    var objectId = new JSONObject(JSONObject.Type.OBJECT);
+    objectId.AddField("id", id);
+    socket.Emit("collision", objectId);
   }
 }

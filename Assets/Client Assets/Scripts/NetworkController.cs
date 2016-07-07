@@ -14,7 +14,7 @@ public class NetworkController : MonoBehaviour {
   static bool loaded;
   static CreateTerrainMesh ter;
   static ObstaclesController obs;
-  static FoodController foods;
+  static FoodsController foods;
   static bool initialized = false;
 
   void Awake () {
@@ -22,7 +22,7 @@ public class NetworkController : MonoBehaviour {
     if (socket == null) {
       ter = GetComponent<CreateTerrainMesh>();
       obs = GetComponent<ObstaclesController>();
-      foods = GetComponent<FoodController>();
+      foods = GetComponent<FoodsController>();
       socket = GetComponent<EESocketIOComponent>();
     }
   }

@@ -20,10 +20,11 @@ public class PlayerCollision : MonoBehaviour {
   /////////////////////
 	void OnTriggerEnter(Collider other) {
     if (other.gameObject.CompareTag("Zombie") || other.gameObject.CompareTag("Player")) {
-      var otherPlayer = other.transform.parent.gameObject;
+      var otherPlayer = other.gameObject;
       var otherPlayerAttributes = otherPlayer.GetComponent<PlayerAttributes>();
       var playerAttributes = GetComponent<PlayerAttributes>();
-
+      Debug.Log("PlayerMass" + otherPlayerAttributes.playerMass);
+      Debug.Log("MyselfMass" + playerAttributes.playerMass);
       // If main player is smaller
       if (otherPlayerAttributes.playerMass > playerAttributes.playerMass) {
         PlayerNetworkController.Kill(playerAttributes.id, GetComponent<Transform>().position.x, GetComponent<Transform>().position.z);
@@ -35,20 +36,23 @@ public class PlayerCollision : MonoBehaviour {
         Debug.Log(GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().id + " " + playerAttributes.id);
         if(GameAttributes.mainPlayer.GetComponent<PlayerAttributes>().id == playerAttributes.id) particles.Play();
         if (other.gameObject.CompareTag("Zombie")) {
-          ZombieSpawner.ZombieCollide(other.transform.parent.gameObject);
+          ZombieSpawner.ZombieCollide(other.gameObject.transform.parent.gameObject);
         }
       }
     }
 
     if (other.gameObject.CompareTag("Obstacle")) {
-      // decrease player mass fn needed
-      // other.gameObject.GetComponent<ObstacleController>().DestroyObstacle(other.id);
+      var id = other.GetComponent<ObstacleController>().id;
+      // Debug.Log(id);
+      other.gameObject.transform.parent.gameObject.GetComponent<ObstaclesController>().ToggleState(id);
+      KnickKnackNetworkController.ObstacleCollision(id);
     }
 
-    // if (other.gameObject.CompareTag("Food")) {
-    //   // increase player mass
-    //   foodPrefab.GetComponent<FoodController>().DestroyFood(other.id);
-    // }
-
+    if (other.gameObject.CompareTag("Food")) {
+      var id = other.GetComponent<FoodController>().id;
+      // Debug.Log(id);
+      other.gameObject.transform.parent.gameObject.GetComponent<FoodsController>().ToggleState(id);
+      KnickKnackNetworkController.FoodEaten(id);
+    }
   }
 }

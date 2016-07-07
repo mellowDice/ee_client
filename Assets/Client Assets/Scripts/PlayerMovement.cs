@@ -210,7 +210,7 @@ public class PlayerMovement : MonoBehaviour {
         charge -= 80 * Time.deltaTime;
         if(charge <= 0) {
           Invoke("ToggleBoostTimer", 2);
-          EndBoost();
+          // EndBoost();
         }
       }
       else {

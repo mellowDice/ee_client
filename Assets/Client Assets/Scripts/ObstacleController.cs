@@ -3,26 +3,22 @@ using System.Collections;
 
 public class ObstacleController : MonoBehaviour {
 
-  public int id;
+  public string id;
 
-  // Use this for initialization
-  void Start () {
-
-  }
-
-  // Update is called once per frame
-  void Update () {
-
+  void Start() {
+    Ray ray = new Ray(transform.position, Vector3.down);
+      RaycastHit hit;
+      if(Physics.Raycast(ray, out hit, 1.5f)) {
+        Debug.DrawLine(transform.position, hit.point, Color.green);
+      }
+    transform.position = new Vector3 (transform.position.x, hit.point.y + 1f, transform.position.z);
   }
 
   void OnTriggerEnter (Collider other) {
-
     if (other.gameObject.CompareTag("Player")) {
-      // pass over id to server
-      // setactive state to false
-      Debug.Log("hit.");
+      Debug.Log("blown to bits by " + id);
+      transform.parent.GetComponent<KnickKnackNetworkController>().ObstacleCollision(id);
     }
-
   }
 
 }

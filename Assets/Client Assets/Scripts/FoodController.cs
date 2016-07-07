@@ -1,33 +1,23 @@
-using UnityEngine;
-using UnityEngine.UI;
-using System.Collections.Generic;
+﻿using UnityEngine;
+using System.Collections;
 
 public class FoodController : MonoBehaviour {
 
-  public GameObject foodPrefab;
-  Dictionary<string, GameObject> foodsDict = new Dictionary<string, GameObject>();
+  public string id;
 
-  public void CreateFood (JSONObject foods)
-  {
-    var length = foods.list.Count;
-    for (var i = 0; i < length; i++) {
-      var position = new Vector3(GetJSONFloat(foods[i], "x"),
-                                 GetJSONFloat(foods[i], "y") * 50f,
-                                 GetJSONFloat(foods[i], "z")
-                                 );
-      var food = Instantiate(foodPrefab, position, Quaternion.identity) as GameObject;
-      foodsDict.Add(foods[i]["id"].ToString(), food);
+  void Start () {
+    Ray ray = new Ray(transform.position, Vector3.down);
+      RaycastHit hit;
+      if(Physics.Raycast(ray, out hit, 1.5f)) {
+        Debug.DrawLine(transform.position, hit.point, Color.green);
+      }
+    transform.position = new Vector3 (transform.position.x, hit.point.y + 1f, transform.position.z);
+  }
+
+  void OnTriggerEnter (Collider other) {
+    if (other.gameObject.CompareTag("Player")) {
+      Debug.Log("Eating all day ery'day");
+      transform.parent.GetComponent<KnickKnackNetworkController>().FoodEaten(id);
     }
   }
-
-  void DestroyFood (string id)
-  {
-    foodsDict["id"].SetActive(false);
-    foodsDict.Remove(id);
-  }
-
-  float GetJSONFloat (JSONObject data, string key) {
-    return float.Parse(data[key].ToString().Replace("\"", ""));
-  }
-
 }

@@ -20,7 +20,7 @@ public class PlayerAttributes : MonoBehaviour {
       // Also set drag and speed to avoid accidental mismatch
       GetComponent<Rigidbody>().drag = 0.6f;
       GetComponent<PlayerMovement>().force = 11;
-      GetComponent<PlayerMovement>().maxVelocity = 2 / Mathf.Log10(pMass/2+5);
+      GetComponent<PlayerMovement>().maxVelocity = 2 / Mathf.Log10(pMass/2+5) * 2;
 
       TEMP = pMass;
     }

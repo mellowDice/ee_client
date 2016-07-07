@@ -42,18 +42,20 @@ public class PlayerCollision : MonoBehaviour {
     }
 
     if (other.gameObject.CompareTag("Obstacle")) {
-      var id = other.GetComponent<ObstacleController>().id;
+      var playerId = GetComponent<PlayerAttributes>().id;
+      var obstacleId = other.GetComponent<ObstacleController>().id;
       // Debug.Log(id);
-      other.gameObject.transform.parent.gameObject.GetComponent<ObstaclesController>().ToggleState(id);
-      KnickKnackNetworkController.ObstacleCollision(id);
+      // other.gameObject.transform.parent.gameObject.GetComponent<ObstaclesController>().ToggleState(obstacleId);
+      KnickKnackNetworkController.ObstacleCollision(playerId, obstacleId);
+      GetComponent<PlayerMovement>().HitObstacle();
     }
 
     if (other.gameObject.CompareTag("Food")) {
       var playerId = GetComponent<PlayerAttributes>().id;
-      var id = other.GetComponent<FoodController>().id;
+      var foodId = other.GetComponent<FoodController>().id;
       // Debug.Log(id);
-      other.gameObject.transform.parent.gameObject.GetComponent<FoodsController>().ToggleState(id);
-      KnickKnackNetworkController.FoodEaten(playerId, id);
+      other.gameObject.transform.parent.gameObject.GetComponent<FoodsController>().ToggleState(foodId);
+      KnickKnackNetworkController.FoodEaten(playerId, foodId);
     }
   }
 }

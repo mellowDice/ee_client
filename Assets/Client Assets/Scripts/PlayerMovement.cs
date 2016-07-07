@@ -90,6 +90,9 @@ public class PlayerMovement : MonoBehaviour {
   // Methods Relating to All Players //
   /////////////////////////////////////
 
+  public void HitObstacle () {
+    body.AddForce(Vector3.up * 50, ForceMode.Impulse);
+  }
   public void Boost() {
     Debug.Log("JUST ENABLED BOOST");
     playerNetworkController.Boost(playerAttributes.id);

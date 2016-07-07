@@ -47,7 +47,6 @@ public class PlayerNetworkController : MonoBehaviour {
     j.AddField("x_position", xPosition);
     j.AddField("z_position", zPosition);
     socket.Emit("kill_player", j);
-    Debug.Log("kill player " + j["id"].ToString());
   }
 
   // ON KILLED: When notified that any player is killed
@@ -60,7 +59,6 @@ public class PlayerNetworkController : MonoBehaviour {
       } else {
         killedPlayer.SetActive(false);
         socket.Emit("initialize_main", new JSONObject());
-        Debug.Log("Player died");
       }
       players.Remove(id);
     }
@@ -68,8 +66,11 @@ public class PlayerNetworkController : MonoBehaviour {
 
   // ON PLAYER MASS UPDATE: Updates the mass of a player
   public static void OnPlayerMassUpdate(SocketIOEvent e) {
-    var id = e.data["id"].ToString();
+
+    Debug.Log("MASS UPDATE");
+    var id = GetJSONString(e.data, "id");
     var mass = GetJSONFloat(e.data, "mass");
+    Debug.Log("MASS UPDATE: " + id + " " + mass);
     GameObject massChangePlayer;
     if(players.TryGetValue(id, out massChangePlayer)) {
       massChangePlayer.GetComponent<PlayerAttributes>().id = id;
@@ -130,8 +131,11 @@ public class PlayerNetworkController : MonoBehaviour {
   }
 
   // BOOST: Broadcasts that main player is using boost
-  public void Boost () {
-    socket.Emit("Boost", new JSONObject());
+  public void Boost (string playerId) {
+    Debug.Log("EMITTING BOOOOOIOOST");
+    var j = new JSONObject(JSONObject.Type.OBJECT);
+    j.AddField("player_id", playerId);
+    socket.Emit("boost", j);
   }
 
   // PLAYER STATE DATA SEND: Broadcasts main player state, so other players can reconcile
@@ -178,7 +182,7 @@ public class PlayerNetworkController : MonoBehaviour {
       player.GetComponent<Transform>().position = new Vector3(Random.Range(0,1000), -50f, Random.Range(0,1000)); // Drop below the map, will be corrected upon start
       players.Add(GetJSONString(e.data, "id"), player);
       player.GetComponent<PlayerAttributes>().id = GetJSONString(e.data, "id");
-      Debug.Log("MASSD " + GetJSONFloat(e.data, "mass"));
+
       player.GetComponent<PlayerAttributes>().playerMass = GetJSONFloat(e.data, "mass");
       player.GetComponent<PlayerCollision>().enabled = false;
     });

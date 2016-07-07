@@ -22,9 +22,6 @@ public class PlayerAttributes : MonoBehaviour {
       GetComponent<PlayerMovement>().force = 11;
       GetComponent<PlayerMovement>().maxVelocity = 2 / Mathf.Log10(pMass/2+5);
 
-
-
-
       TEMP = pMass;
     }
   }

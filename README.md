@@ -213,6 +213,34 @@ Obstacles are limited in number and placed randomly across the board. On collisi
 | GET /update_object?type=[object type]&id=[object id] | POST /[object type]/add                      | Updates object coordinates and posts to DB                                                                 |
 | GET /get_pi_food?x=[x]&z=[z]&player_id=[id]          | POST /players/:id <br> response(food object) | Requests player data from DB and generates food based on player mass. <br> Returns food as a JSON object   |
 
+## Data Service
+
+#### Redis Cache
+The Data Service uses Redis, an in-memory data structure store, to allow for fast, easy retrieval of game objects. 
+
+#### File System
+```
+Root
+├── controllers
+│   ├── food.js
+│   ├── obstacles.js
+│   ├── players.js
+│   ├── redis.js
+│   ├── terrain.js
+│   └── users.js
+├── data.server.js
+├── Dockerfile
+├── docker-compose.yml
+├── config.js
+├── package.json
+├── redis
+│   ├── redis.js
+│   └── utils.js
+├── test
+│   └── utilityTest.js
+└── README.md
+```
+
 ## Web Service
 Static web page to direct users to app.
 

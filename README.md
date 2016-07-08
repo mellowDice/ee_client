@@ -46,13 +46,6 @@ The server relies on Redis to track all clients connected to the game as well as
 * Docker
 * Circle CI
 
-### Getting Started
-
-Pull down Docker image to run server locally
-``` 
-$ docker pull erinkav/landscape-service
-$ docker run --name landscape_service -d -p 7000:7000 -e APP_CONFIG_FILE='config/development.py' erinkav/landscape-service
-```
 ### Listeners
 
 | Incoming                     | Outgoing                                                                                        | Notes                                                                                                                                                  |
@@ -183,6 +176,33 @@ Obstacles are limited in number and placed randomly across the board. On collisi
 ## Web Service
 Static web page to direct users to app.
 
+## Getting Started
+### Workflow
+To submit changes, fork the project and make pull requests from your branch. To run with all dependencies installed, pull down images from DockerHub:
+* [Player Movement and Primary Server](https://hub.docker.com/r/erinkav/ee_server/)
+* [Field Object Service](https://hub.docker.com/r/erinkav/field-object-service/) 
+* [Landscape Service](https://hub.docker.com/r/erinkav/landscape-service/)
+* [Data Service](https://hub.docker.com/r/aaronwbrown/data_service/)
+
+### Development mode
+
+Pull down each repo in a new tab
+```
+$ docker pull erinkav/ee_server
+$ docker run --name main_server -d -p 9000:9000 -e APP_CONFIG_FILE='config/development.py' erinkav/ee_server
+```
+```
+$ docker pull erinkav/landscape-service
+$ docker run --name landscape_service -d -p 7000:7000 -e APP_CONFIG_FILE='config/development.py' erinkav/landscape-service
+```
+```
+$ docker pull erinkav/field-object-service
+$ docker run --name object_service -d -p 7001:7001 -e APP_CONFIG_FILE='config/development.py' erinkav/field-object-service
+```
+```
+$ docker pull aaronwbrown/data_service
+$ docker run --name data_service -d -p 3000:30000 -e APP_CONFIG_FILE='config/development.py' aaronwbrown/data_service
+```
 ##### Screenshot
 ![Static Web Page Screenshot](https://github.com/mellowDice/ee_diagrams/blob/master/Static%20Web%20Page%20Screenshot.PNG?raw=true) 
 

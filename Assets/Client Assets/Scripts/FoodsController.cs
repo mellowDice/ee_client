@@ -18,7 +18,7 @@ public class FoodsController : MonoBehaviour {
     for (var i = 0; i < length; i++) {
       var id = GetJSONString(foods[i], "id");
       var position = new Vector3(GetJSONFloat(foods[i], "x"),
-                                                            100f,
+                                                        100f,
                                  GetJSONFloat(foods[i], "z")
                                  );
 
@@ -30,16 +30,16 @@ public class FoodsController : MonoBehaviour {
       } else {
         foodsDict[id].transform.position = position;
         foodsDict[id].GetComponent<FoodController>().NewPos();
-        ToggleState(id);
+        // ToggleState(id);
       }
     }
   }
 
-  public void ToggleState (string id) {
-    objectState = foodsDict[id].activeSelf;
-    // Debug.Log("state" + objectState);
-    foodsDict[id].SetActive(!objectState);
-  }
+  // public void ToggleState (string id) {
+  //   objectState = foodsDict[id].activeSelf;
+  //   Debug.Log("state" + objectState);
+  //   foodsDict[id].SetActive(!objectState);
+  // }
 
 
   float GetJSONFloat (JSONObject data, string key) {

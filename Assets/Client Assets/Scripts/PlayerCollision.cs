@@ -45,7 +45,6 @@ public class PlayerCollision : MonoBehaviour {
       var playerId = GetComponent<PlayerAttributes>().id;
       var obstacleId = other.GetComponent<ObstacleController>().id;
       // Debug.Log(id);
-      // other.gameObject.transform.parent.gameObject.GetComponent<ObstaclesController>().ToggleState(obstacleId);
       KnickKnackNetworkController.ObstacleCollision(playerId, obstacleId);
       GetComponent<PlayerMovement>().HitObstacle();
     }
@@ -54,7 +53,6 @@ public class PlayerCollision : MonoBehaviour {
       var playerId = GetComponent<PlayerAttributes>().id;
       var foodId = other.GetComponent<FoodController>().id;
       // Debug.Log(id);
-      other.gameObject.transform.parent.gameObject.GetComponent<FoodsController>().ToggleState(foodId);
       KnickKnackNetworkController.FoodEaten(playerId, foodId);
     }
   }

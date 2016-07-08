@@ -56,6 +56,8 @@ public class PlayerNetworkController : MonoBehaviour {
     string id = GetJSONString(e.data, "id");
     if(players.TryGetValue(id, out killedPlayer)) {
       if(killedPlayer != GameAttributes.mainPlayer) {
+        GameAttributes.myParticleSystem.transform.position = killedPlayer.transform.position;
+        GameAttributes.myParticleSystem.Play();
         Destroy(killedPlayer, 0.0f);
       } else {
         killedPlayer.SetActive(false);
@@ -123,7 +125,7 @@ public class PlayerNetworkController : MonoBehaviour {
     var mass = GetJSONFloat(e.data, "mass");
     var x = GetJSONFloat(e.data, "x");
     var z = GetJSONFloat(e.data, "z");
-    if (player.activeSelf == false) { 
+    if (player.activeSelf == false) {
       player.SetActive(true);
     }
     players.Add(id, GameAttributes.mainPlayer);

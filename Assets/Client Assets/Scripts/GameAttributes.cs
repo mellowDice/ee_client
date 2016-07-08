@@ -17,6 +17,8 @@ public class GameAttributes : MonoBehaviour {
   public static GameObject floor;
   public LayerMask _myLayerMask;
   public static LayerMask myLayerMask;
+  public ParticleSystem _myParticleSystem;
+  public static ParticleSystem myParticleSystem;
 
   // Inputs
   public GameObject VRGroup;
@@ -33,6 +35,7 @@ public class GameAttributes : MonoBehaviour {
     floor = _floor;
     camera = VR ? GVR.GetComponentInChildren<Camera>() : NonVRCamera;
     myLayerMask = _myLayerMask;
+    myParticleSystem = _myParticleSystem;
   }
 
   void Start() {

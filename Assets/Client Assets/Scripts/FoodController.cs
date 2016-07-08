@@ -11,18 +11,7 @@ public class FoodController : MonoBehaviour {
   }
 
   public void NewPos () {
-    Ray ray = new Ray(transform.position, Vector3.down);
-    RaycastHit hit;
-      if(Physics.Raycast(ray, out hit)) {
-        Debug.DrawLine(transform.position, hit.point, Color.green);
-      }
+    var hit = GameAttributes.RayDown(transform);
     transform.position = new Vector3 (transform.position.x, hit.point.y + 1f, transform.position.z);
   }
-
-  // void OnTriggerEnter (Collider other) {
-  //   if (other.gameObject.CompareTag("Player")) {
-  //     Debug.Log("Eating all day ery'day");
-  //     transform.parent.GetComponent<KnickKnackNetworkController>().FoodEaten(_id);
-  //   }
-  // }
 }

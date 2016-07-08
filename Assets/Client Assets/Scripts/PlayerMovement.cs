@@ -39,8 +39,6 @@ public class PlayerMovement : MonoBehaviour {
 	// Initialization
 	public virtual void Start () {
     particles = GameAttributes.camera.GetComponentInChildren<ParticleSystem>();
-    particles.loop = true;
-    particles.Play();
     body = GetComponent<Rigidbody>();
     playerAttributes = GetComponent<PlayerAttributes>();
 
@@ -62,8 +60,6 @@ public class PlayerMovement : MonoBehaviour {
       if(Physics.Raycast(transform.position, Vector3.down, out hit)) {
         transform.position -= new Vector3(0 , hit.distance - 10 , 0);
       }
-      particles.loop = false;
-      particles.Stop();
     });
 
     NetworkController.OnReady(delegate() {
@@ -98,9 +94,13 @@ public class PlayerMovement : MonoBehaviour {
     playerNetworkController.Boost(playerAttributes.id);
     Debug.Log("Called Player Network Controller Boost FN");
     boost = true;
+    particles.loop = true;
+    particles.Play();
   }
   public void EndBoost() {
     boost = false;
+    particles.loop = false;
+    particles.Stop();
   }
 
   /////////////////////////////////////////////////

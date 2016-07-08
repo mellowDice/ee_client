@@ -272,7 +272,7 @@ $ docker pull aaronwbrown/data_service
 $ docker run --name data_service -d -p 3000:30000 -e APP_CONFIG_FILE='config/development.py' aaronwbrown/data_service
 ```
 ##### Screenshot
-![Static Web Page Screenshot](https://github.com/mellowDice/ee_diagrams/blob/master/Static%20Web%20Page%20Screenshot.PNG?raw=true) 
+![Static Web Page Screenshot](https://github.com/mellowDice/ee_diagrams/blob/master/Screen%20Shot%202016-07-08%20at%203.45.37%20PM.png) 
 
 ## Contributors
 Aaron Brown

@@ -28,16 +28,9 @@ public class ObstaclesController : MonoBehaviour {
       } else {
         obstaclesDict[id].transform.position = position;
         obstaclesDict[id].GetComponent<ObstacleController>().NewPos();
-        ToggleState(id);
       }
     }
   }
-
-  public void ToggleState (string id) {
-    objectState = obstaclesDict[id].activeSelf;
-    obstaclesDict[id].SetActive(!objectState);
-  }
-
 
   float GetJSONFloat (JSONObject data, string key) {
     return float.Parse(data[key].ToString().Replace("\"", ""));

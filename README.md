@@ -161,4 +161,16 @@ Final Dimension has the same weight in both indexes
 todo
 
 ## Web Service
-todo
+Static web page to direct users to app.
+
+##### Current Screenshot
+![Static Web Page Screenshot](https://github.com/mellowDice/ee_diagrams/blob/master/Static%20Web%20Page%20Screenshot.PNG?raw=true) 
+
+## Contributors
+Aaron Brown
+
+Tim Do
+
+Erin Kavanaugh
+
+Austin Baltes

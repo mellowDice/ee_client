@@ -42,6 +42,7 @@ public class CreateTerrainMesh : MonoBehaviour {
     plane.AddComponent<MeshFilter>();
     plane.AddComponent<MeshRenderer>();
     plane.GetComponent<MeshRenderer>().material = mats;
+    plane.layer = 11;
     Mesh procMesh = new Mesh();
     procMesh.vertices = verts.ToArray(); //Assign verts, uvs, and tris to the mesh
     procMesh.uv = uvs;

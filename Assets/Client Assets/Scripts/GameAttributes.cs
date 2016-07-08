@@ -15,6 +15,8 @@ public class GameAttributes : MonoBehaviour {
   public static Camera camera;
   public GameObject _floor;
   public static GameObject floor;
+  public LayerMask _myLayerMask;
+  public static LayerMask myLayerMask;
 
   // Inputs
   public GameObject VRGroup;
@@ -30,6 +32,7 @@ public class GameAttributes : MonoBehaviour {
     disableLandscape = _disableLandscape;
     floor = _floor;
     camera = VR ? GVR.GetComponentInChildren<Camera>() : NonVRCamera;
+    myLayerMask = _myLayerMask;
   }
 
   void Start() {
@@ -38,4 +41,9 @@ public class GameAttributes : MonoBehaviour {
     floor.SetActive(disableLandscape);
   }
 
+  public static RaycastHit RayDown(Transform objectTransform) {
+    RaycastHit hit;
+    Physics.Raycast(objectTransform.position, Vector3.down, out hit, 1000f, myLayerMask);
+    return hit;
+  }
 }

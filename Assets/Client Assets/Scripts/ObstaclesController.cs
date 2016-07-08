@@ -15,29 +15,25 @@ public class ObstaclesController : MonoBehaviour {
     var length = obstacles.list.Count;
     for (var i = 0; i < length; i++) {
       var id = GetJSONString(obstacles[i], "id");
-      var position = new Vector3(GetJSONFloat(obstacles[i], "x"),
-                                                            100f,
-                                 GetJSONFloat(obstacles[i], "z")
-                                 );
+      var idVal = GetJSONFloat(obstacles[i], "id");
+      var x = GetJSONFloat(obstacles[i], "x");
+      var z = GetJSONFloat(obstacles[i], "z");
+      var position = new Vector3( x, 100f, z );
 
       if (!obstaclesDict.ContainsKey(id)) {
         var obstacle = Instantiate(obstaclePrefab, position, Quaternion.identity) as GameObject;
         obstacle.transform.parent = transform;
         obstacle.GetComponent<ObstacleController>().id = id;
         obstaclesDict.Add(obstacle.GetComponent<ObstacleController>().id, obstacle);
+      } if (idVal < 0 && x <= 0 && z <= 0) {
+        obstaclesDict[id].SetActive(false);
       } else {
         obstaclesDict[id].transform.position = position;
         obstaclesDict[id].GetComponent<ObstacleController>().NewPos();
-        // ToggleState(id);
+        obstaclesDict[id].SetActive(true);
       }
     }
   }
-
-  // public void ToggleState (string id) {
-  //   objectState = obstaclesDict[id].activeSelf;
-  //   obstaclesDict[id].SetActive(!objectState);
-  // }
-
 
   float GetJSONFloat (JSONObject data, string key) {
     return float.Parse(data[key].ToString().Replace("\"", ""));

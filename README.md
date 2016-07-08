@@ -113,8 +113,11 @@ Final Dimension has the same weight in both indexes
 
 ##### Solving the height map
 1) The three vectors are multiplied.
+
 2) To complete the dot-product both indexes of the final-dimension (vector-X, vector-Z) are summed
+
 3) The weighted dot products are summed (dimensions 3, 4) to create the weighted dot product and final height map
+
 ## Field Objects Service
 todo
 

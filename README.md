@@ -163,7 +163,7 @@ todo
 ## Web Service
 Static web page to direct users to app.
 
-##### Current Screenshot
+##### Screenshot
 ![Static Web Page Screenshot](https://github.com/mellowDice/ee_diagrams/blob/master/Static%20Web%20Page%20Screenshot.PNG?raw=true) 
 
 ## Contributors

@@ -22,7 +22,47 @@ Free iOS VR game where marble players compete with each other for dominance.
 
 
 ## Client
-todo
+The iOS client is the user experience. It is developed on the Unity3D platform using C#.
+
+Unity3D uses a hierarchy of objects, each of which have C# scripts attached to dictate behavior. These scripts have the ability to generate additional (non-hierarchy objects) using other pre-built objects called Prefabs.
+
+### Hierarchy
+The following is the default hierarchy for the scene:
+
+
+* Game Attributes: Settings related to the entire app performance
+* Network: All the network controllers and their settings
+* Player: The main player (built from the player prefab)
+* Physical Setting: Bounding walls and lighting
+* VR Mode: Cameras and setup related to viewing in VR
+* Non-VR Mode: Camera and setup related to viewing in single screen
+* PlayerEatenParticles: Particle effect emitted upon player collision
+* Obstacles: Contains all mines, which throw players into the sky
+* Food: Fragments food can eat to grow
+* ProcPlane: Instantiated upon landscape load
+
+
+### Source Code Files
+
+* CameraDirection: Points camera in direction user is facing
+* CameraOrbit: Maintains camera in position above and behind player
+* CreateTerrainMesh: Projects server-generated heightmap onto landscape mesh
+* EESocketIOComponent: Inherited from SocketIOComponent to give some additional options related to socket communication
+* FoodController: Controls the placement of a single food particle on the landscape
+* FoodsController: Tracks all food particles and their creation / consumption
+* GameAttributes: Tracks primary game configuration, and holds references to instances of most important objects
+* HeadTilt: Allows users to change direction by tilting head
+* KnickKnackNetworkController: Sockets network interface for all food and obstacles
+* NetworkController: Network controller for initialization and global communication
+* NetworkMove: Network controller to send main player direction moving and state (position, velocity, rotation, angular velocity)
+* ObstacleController: Tracks all obstacles
+* PlayerAttributes: Holds all player attributes and player mass/size, id
+* PlayerCollision: Controller for what to do when a player collides with something else
+* PlayerMovement: Controls forces related to general player movement; also controls boosting
+* PlayerNetworkController: Relays messages with server related to player instantiation, movement, and status
+* Reticle: Controls boost retical for full-screen view
+* VRReticle: Controls boost retical for split-screen view
+
 
 
 ## Primary Server and Movement Service

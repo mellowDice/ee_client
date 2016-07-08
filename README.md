@@ -1,7 +1,7 @@
-# ShatterLand Client
+# ShatterLand
 
 Free iOS VR game where marble players compete with each other for dominance.
-
+![ShatterLand Game Screenshot](https://github.com/mellowDice/ee_diagrams/blob/master/ScreenShot1.png?raw=true)
 
 ## Game Play
 

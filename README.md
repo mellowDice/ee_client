@@ -158,7 +158,27 @@ Final Dimension has the same weight in both indexes
 3) The weighted dot products are summed (dimensions 3, 4) to create the weighted dot product and final height map
 
 ## Field Objects Service
-todo
+Field Object server generates and relays all object locations in the game. There are two types of field objects: 
+* Food fragments 
+* Obstacles 
+
+### Objects
+#### Food Fragments
+
+Food fragments are randomly generated across the board on start. When a player collides with a food fragment, the player's mass is increased by the primary server and the Field Objects service generates a new random location for the object. 
+
+Food is also created on collision between players. Food objects appear in place of the smaller player. These food objects are not randomly placed and are not regenerated after they are eaten by another player.
+Obstacles are limited in number randomly placed across the board. 
+
+#### Obstacles
+Obstacles are limited in number and placed randomly across the board. On collision between player and obstacles, the player's mass decreases and the player is launched upwards. 
+
+### Routes
+| Incoming                                             | Response                                     | Actions                                                                                                    |
+|------------------------------------------------------|----------------------------------------------|------------------------------------------------------------------------------------------------------------|
+| GET /terrain_objects                                 | POST /send_field_objects <br> response('ok') | Requests all food and obstacle locations from DB. Creates if none exist and posts them to main server <br> |
+| GET /update_object?type=[object type]&id=[object id] | POST /[object type]/add                      | Updates object coordinates and posts to DB                                                                 |
+| GET /get_pi_food?x=[x]&z=[z]&player_id=[id]          | POST /players/:id <br> response(food object) | Requests player data from DB and generates food based on player mass. <br> Returns food as a JSON object   |
 
 ## Web Service
 Static web page to direct users to app.

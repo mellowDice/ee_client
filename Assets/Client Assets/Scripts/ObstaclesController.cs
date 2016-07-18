@@ -18,7 +18,9 @@ public class ObstaclesController : MonoBehaviour {
       var idVal = GetJSONFloat(obstacles[i], "id");
       var x = GetJSONFloat(obstacles[i], "x");
       var z = GetJSONFloat(obstacles[i], "z");
-      var position = new Vector3( x, 100f, z );
+      var position = new Vector3( x,
+                                  GameAttributes.GetLandscapeY(transform.position.x, transform.position.z) + 1f,
+                                  z );
 
       if (!obstaclesDict.ContainsKey(id)) {
         var obstacle = Instantiate(obstaclePrefab, position, Quaternion.identity) as GameObject;
@@ -29,7 +31,6 @@ public class ObstaclesController : MonoBehaviour {
         obstaclesDict[id].SetActive(false);
       } else {
         obstaclesDict[id].transform.position = position;
-        obstaclesDict[id].GetComponent<ObstacleController>().NewPos();
         obstaclesDict[id].SetActive(true);
       }
     }

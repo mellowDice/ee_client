@@ -21,7 +21,9 @@ public class FoodsController : MonoBehaviour {
       var idVal = GetJSONFloat(foods[i], "id");
       var x = GetJSONFloat(foods[i], "x");
       var z = GetJSONFloat(foods[i], "z");
-      var position = new Vector3( x, 100f, z );
+      var position = new Vector3( x,
+                                  GameAttributes.GetLandscapeY(transform.position.x, transform.position.z) + 1f,
+                                  z );
 
       if (!foodsDict.ContainsKey(id)) {
         var food = Instantiate(foodPrefab, position, Quaternion.identity) as GameObject;
@@ -34,7 +36,6 @@ public class FoodsController : MonoBehaviour {
         foodsDict[id].SetActive(false);
       } else {
         foodsDict[id].transform.position = position;
-        foodsDict[id].GetComponent<FoodController>().NewPos();
         foodsDict[id].SetActive(true);
       }
     }

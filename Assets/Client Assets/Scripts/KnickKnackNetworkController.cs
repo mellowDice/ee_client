@@ -7,37 +7,55 @@ public class KnickKnackNetworkController : MonoBehaviour {
   public GameObject foodPrefab;
   public GameObject obstaclePrefab;
   static SocketIOComponent socket;
+  static FoodsController foodsController;
+  static ObstaclesController obstaclesController;
 
   void Awake () {
-
+    foodsController = foodPrefab.GetComponent<FoodsController>();
+    obstaclesController = obstaclePrefab.GetComponent<ObstaclesController>();  
   }
 
 	void Start () {
     socket = NetworkController.socket;
     socket.On("field_objects", CreateKnickknacks);
-    socket.On("eaten", ToggleFoodState);
+    socket.On("eaten", UpdateFoodState);
 	}
 
   ////////////////////////////////////
   //       Create Knickknacks       //
   ////////////////////////////////////
   void CreateKnickknacks (SocketIOEvent e) {
-    foodPrefab.GetComponent<FoodsController>().CreateFood(e.data["food"]);
+    UpdateFoodState(e);
     obstaclePrefab.GetComponent<ObstaclesController>().CreateObstacle(e.data["obstacles"]);
   }
 
   ////////////////////////////////////
   //     Methods Related to Food    //
   ////////////////////////////////////
-  void ToggleFoodState (SocketIOEvent e) {
-    foodPrefab.GetComponent<FoodsController>().CreateFood(e.data["food"]);
+
+  public static void UpdateFoodState (SocketIOEvent e) {
+    JSONObject foods = e.data["food"];
+    var length = foods.list.Count;
+    for (var i = 0; i < length; i++) {
+      var idVal = GetJSONFloat(foods[i], "id");
+      var id = GetJSONString(foods[i], "id");
+      var x = GetJSONFloat(foods[i], "x");
+      var z = GetJSONFloat(foods[i], "z");
+      
+      // negative ids represent food generated from player collision; being off map means being inactivated
+      // TODO: server should send a field indicating inactivity
+      if (idVal < 0 && x <= 0 && z <= 0) {
+        FoodsController.DeactivateFood(id);
+        return;
+      }
+      foodsController.CreateOrMoveFood(id, x, z);
+    }
   }
 
   public static void FoodEaten (string playerId, string foodId) {
     var foodData = new JSONObject();
     foodData.AddField("food_id", foodId);
     foodData.AddField("player_id", playerId);
-
     socket.Emit("eat", foodData);
   }
 
@@ -50,5 +68,15 @@ public class KnickKnackNetworkController : MonoBehaviour {
     objectId.AddField("obstacle_id", obstacleId);
     objectId.AddField("player_id", playerId);
     socket.Emit("collision", objectId);
+  }
+
+
+  // Utilities
+  static float GetJSONFloat (JSONObject data, string key) {
+    return float.Parse(data[key].ToString().Replace("\"", ""));
+  }
+
+  public static string GetJSONString (JSONObject data, string key) {
+    return data[key].ToString().Trim('"');
   }
 }

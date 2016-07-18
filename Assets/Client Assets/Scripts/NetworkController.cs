@@ -62,9 +62,9 @@ public class NetworkController : MonoBehaviour {
 
   static void OnReceiveFieldObjects(SocketIOEvent e) {
     // var obs = GetComponent<ObstaclesController>();
-    obs.CreateObstacle(e.data["obstacles"]);
+    // obs.CreateObstacle(e.data["obstacles"]);
 
     // var foods = GetComponent<FoodController>();
-    foods.CreateFood(e.data["food"]);
+    // KnickKnackNetworkController.UpdateFoodState(e.data["food"]);
   }
 }

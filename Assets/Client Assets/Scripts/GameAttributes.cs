@@ -46,7 +46,10 @@ public class GameAttributes : MonoBehaviour {
 
   public static float GetLandscapeY(float x, float z) {
     RaycastHit hit;
-    Physics.Raycast(new Vector3(x, 50, z), Vector3.down, out hit, 1000f, myLayerMask);
-    return hit.point.y;
+    if (Physics.Raycast(new Vector3(x, 50, z), Vector3.down, out hit, 1000f, myLayerMask)) {
+      return hit.point.y;
+    }
+    Debug.Log("NO RAYCAST HIT");
+    return 0;
   }
 }

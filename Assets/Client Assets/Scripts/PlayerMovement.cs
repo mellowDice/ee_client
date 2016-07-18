@@ -90,9 +90,7 @@ public class PlayerMovement : MonoBehaviour {
     body.AddForce(Vector3.up * 50, ForceMode.Impulse);
   }
   public void Boost() {
-    Debug.Log("JUST ENABLED BOOST");
     playerNetworkController.Boost(playerAttributes.id);
-    Debug.Log("Called Player Network Controller Boost FN");
     boost = true;
     particles.loop = true;
     particles.Play();

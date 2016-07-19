@@ -26,7 +26,7 @@ public class KnickKnackNetworkController : MonoBehaviour {
   ////////////////////////////////////
   void CreateKnickknacks (SocketIOEvent e) {
     UpdateFoodState(e);
-    obstaclePrefab.GetComponent<ObstaclesController>().CreateObstacle(e.data["obstacles"]);
+    CreateOrMoveObstacles(e);
   }
 
   ////////////////////////////////////
@@ -63,6 +63,21 @@ public class KnickKnackNetworkController : MonoBehaviour {
   //  Methods Related to Obstacles  //
   ////////////////////////////////////
 
+  public static void CreateOrMoveObstacles (SocketIOEvent e)
+  {
+    JSONObject obstacles = e.data["obstacles"];
+    var length = obstacles.list.Count;
+    for (var i = 0; i < length; i++) {
+      var id = GetJSONString(obstacles[i], "id");
+      var idVal = GetJSONFloat(obstacles[i], "id");
+      var x = GetJSONFloat(obstacles[i], "x");
+      var z = GetJSONFloat(obstacles[i], "z");
+      var position = new Vector3( x,
+                                  GameAttributes.GetLandscapeY(x, z) + 1f,
+                                  z );
+      obstaclesController.CreateOrMoveObstacle(id, x, z);
+    }
+  }
   public static void ObstacleCollision (string playerId, string obstacleId) {
     var objectId = new JSONObject();
     objectId.AddField("obstacle_id", obstacleId);

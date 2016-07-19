@@ -54,6 +54,7 @@ public class PlayerCollision : MonoBehaviour {
       var foodId = other.GetComponent<FoodController>().id;
       // Debug.Log(id);
       KnickKnackNetworkController.FoodEaten(playerId, foodId);
+      FoodsController.DeactivateFood(foodId);
     }
   }
 }

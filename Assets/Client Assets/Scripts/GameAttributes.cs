@@ -44,9 +44,12 @@ public class GameAttributes : MonoBehaviour {
     floor.SetActive(disableLandscape);
   }
 
-  public static RaycastHit RayDown(Transform objectTransform) {
+  public static float GetLandscapeY(float x, float z) {
     RaycastHit hit;
-    Physics.Raycast(objectTransform.position, Vector3.down, out hit, 1000f, myLayerMask);
-    return hit;
+    if (Physics.Raycast(new Vector3(x, 50, z), Vector3.down, out hit, 1000f, myLayerMask)) {
+      return hit.point.y;
+    }
+    Debug.Log("NO RAYCAST HIT");
+    return 0;
   }
 }

@@ -80,10 +80,8 @@ public class PlayerNetworkController : MonoBehaviour {
   // ON PLAYER MASS UPDATE: Updates the mass of a player
   public static void OnPlayerMassUpdate(SocketIOEvent e) {
 
-    Debug.Log("MASS UPDATE");
     var id = GetJSONString(e.data, "id");
     var mass = GetJSONFloat(e.data, "mass");
-    Debug.Log("MASS UPDATE: " + id + " " + mass);
     GameObject massChangePlayer;
     if(players.TryGetValue(id, out massChangePlayer)) {
       massChangePlayer.GetComponent<PlayerAttributes>().id = id;
@@ -145,7 +143,6 @@ public class PlayerNetworkController : MonoBehaviour {
 
   // BOOST: Broadcasts that main player is using boost
   public void Boost (string playerId) {
-    Debug.Log("EMITTING BOOOOOIOOST");
     var j = new JSONObject(JSONObject.Type.OBJECT);
     j.AddField("player_id", playerId);
     socket.Emit("boost", j);
